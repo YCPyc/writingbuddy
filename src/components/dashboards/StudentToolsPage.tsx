@@ -1,4 +1,11 @@
 import { LogoutButton } from "../auth/LogoutButton";
+import ProvidedFeedbackOnSelection from "@/src/components/dashboards/ProvideFeedbackOnSelection";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/src/components/ui/accordion";
 
 type StudentToolsPageProps = {
   userId: string;
@@ -6,6 +13,17 @@ type StudentToolsPageProps = {
 };
 
 export function StudentToolsPage({ userId, classCode }: StudentToolsPageProps) {
+  const [feedback, setFeedback] = useState<string>("");
+  const [selectedText, setSelectedText] = useState<string>("");
+
+  const handleAddFeedback = (feedback: string) => {
+    setFeedback(feedback);
+  };
+
+  const handleAddSelectedText = (selectedText: string) => {
+    setSelectedText(selectedText);
+  };
+
   return (
     <div className="student-tools-page">
       <div className="header">
@@ -13,7 +31,22 @@ export function StudentToolsPage({ userId, classCode }: StudentToolsPageProps) {
         <LogoutButton />
       </div>
       <p>Class Code: {classCode}</p>
-      {/* Add student tools here */}
+
+      <ProvidedFeedbackOnSelection
+        addFeedback={handleAddFeedback}
+        getSelectedText={handleAddSelectedText}
+      />
+
+      {selectedText ? (
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>{selectedText}</AccordionTrigger>
+            <AccordionContent>{feedback}</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

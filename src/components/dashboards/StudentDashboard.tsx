@@ -5,7 +5,7 @@ import { classRepository } from "@/src/domains/class/repository";
 import { supabase } from "@/lib/supabaseClient";
 import { StudentToolsPage } from "./StudentToolsPage";
 import { LogoutButton } from "../auth/LogoutButton";
-
+import { Button } from "../ui/button";
 type StudentDashboardProps = {
   userId: string;
 };
@@ -72,10 +72,10 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
             required
           />
         </div>
-        <button onClick={joinClass} disabled={loading || !inputtedClassCode}>
+        <Button onClick={joinClass} disabled={loading || !inputtedClassCode}>
           {loading ? "Joining..." : "Join Class"}
-        </button>
-        {error && <div className="error">{error}</div>}
+        </Button>
+        {error && <div className="error">{error}</div>}{" "}
       </div>
     </div>
   );

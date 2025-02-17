@@ -4,6 +4,7 @@ import { TeacherDashboard } from "@/src/components/dashboards/TeacherDashboard";
 import { StudentDashboard } from "@/src/components/dashboards/StudentDashboard";
 import { useState } from "react";
 import type { UserRole } from "@/src/types";
+import { Button } from "@/src/components/ui/button";
 
 function AppContent() {
   const {
@@ -19,7 +20,7 @@ function AppContent() {
   if (!id) {
     return (
       <div className="container">
-        <button onClick={signInWithGoogle}>Sign in with Google</button>
+        <Button onClick={signInWithGoogle}>Sign in with Google</Button>
       </div>
     );
   }
