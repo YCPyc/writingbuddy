@@ -4,6 +4,7 @@
 
 body {
     @apply min-w-[500px];
+    @apply min-h-[500px];
   }
 
 @layer base {
