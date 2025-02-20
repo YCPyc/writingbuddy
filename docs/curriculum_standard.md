@@ -1,5 +1,5 @@
-The Common Standards Project offers an API for developers to get standards from various educational organizations.  The API is available at https://commonstandardsproject.com/developers.This guide offers a basic introduction to using the API.
-
+The Common Standards Project offers an API for developers to get standards from various educational organizations.  The API is available at https://commonstandardsproject.com/developers.
+This guide offers a basic introduction to using the API.
 
 Notes:
 * The following steps are written in Python.  
