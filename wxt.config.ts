@@ -10,6 +10,7 @@ export default defineConfig({
     host_permissions: [
       "https://docs.google.com/document/*",
       "https://www.googleapis.com/*",
+      "https://commonstandardsproject.com/*",
     ],
     oauth2: {
       client_id:
