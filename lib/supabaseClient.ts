@@ -1,8 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/supabase/database.types";
 
-// Replace these with your actual Supabase project values from your project settings
-const supabaseUrl = "http://localhost:54321";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphenVoZ2FpdmFxcGRseGNjbm1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkwNTYxODQsImV4cCI6MjA1NDYzMjE4NH0.YhjtPHSePLBW3D673vUkCaY0pWy1Kh7r7QAP6WoOO8A";
+const supabaseUrl = import.meta.env.WXT_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.WXT_SUPABASE_ANON_KEY as string;
+console.log(supabaseUrl, supabaseAnonKey);
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error("Missing Supabase environment variables");
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);

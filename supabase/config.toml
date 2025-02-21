@@ -291,6 +291,6 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 [auth.external.google]
 enabled = true
-client_id = "env(OAUTH_GOOGLE_CLIENT_ID)"
-secret = "env(OAUTH_GOOGLE_SECRET)"
+client_id = "env(WXT_OAUTH_GOOGLE_CLIENT_ID)"
+secret = "env(WXT_OAUTH_GOOGLE_SECRET)"
 redirect_uri = "http://localhost:54321/auth/v1/callback"
