@@ -20,7 +20,6 @@ import {
 */
 
 function FeedbackCard({ title, copy, prompt }: any) {
-  // TODO: Turn this into a reusable class
   const handleClick = async () => {
     let responseFeedback = "";
 
