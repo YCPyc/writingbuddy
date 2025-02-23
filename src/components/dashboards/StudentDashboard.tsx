@@ -13,6 +13,11 @@ import FeedbackCard from "../FeedbackCard";
 type StudentDashboardProps = {
   userId: string;
 };
+import { THESIS_FEEDBACK_PROMPT } from "@/src/prompts/thesisPrompt";
+import { EVIDENCE_USE_FEEDBACK_PROMPT } from "@/src/prompts/evidencePrompt";
+import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
+import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
+import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const {
@@ -29,33 +34,33 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [showTools, setShowTools] = useState(false);
   const [inputtedClassCode, setInputtedClassCode] = useState("");
+  const [feedbackDictionary, setFeedbackDictionary] = useState({});
 
   const feedbackButtons = [
     {
       title: "Thesis",
       copy: "Get advice about your thesis",
-      prompt: "What makes a good thesis?",
+      prompt: THESIS_FEEDBACK_PROMPT,
     },
     {
       title: "Use of Evidence",
       copy: "Get feedback on the sources you used and the way you incorporated them.",
-      prompt:
-        "Did the writing use enough sources and are they described adequately?",
+      prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
     },
     {
       title: "Analysis of Evidence",
       copy: "See how effectively your writing used evidence",
-      prompt: "Did the paragraph effectively support its ideas with evidence?",
+      prompt: SUPPORT_FEEDBACK_PROMPT,
     },
     {
       title: "Paragraph Structure",
       copy: "Get tips about the structure of each paragraph",
-      prompt: "Evaluate the structure of each paragraph.",
+      prompt: PARAGRAPH_STRUCTURE_PROMPT,
     },
     {
       title: "Grammar",
       copy: "Point out grammar errors",
-      prompt: "Where are the grammar errors?",
+      prompt: GRAMMAR,
     },
   ];
 
@@ -85,6 +90,11 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFeedback = ({ name, feedback }: any) => {
+    const newFeedback = { [name]: feedback };
+    setFeedbackDictionary((prev) => ({ ...prev, ...newFeedback }));
   };
 
   return (
@@ -119,9 +129,40 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
           <FeedbackCard
             title={item.title}
             copy={item.copy}
-            prompt={item.prompt}
+            prompt_template={item.prompt}
+            handleFeedback={handleFeedback}
           />
         ))}
+      </div>
+      <div>
+        {Object.keys(feedbackDictionary).length > 0 && (
+          <>
+            {Object.keys(feedbackDictionary).map((key) => (
+              <div key={key} className="mb-5">
+                <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
+                {/* Render the main key as a heading */}
+                {Object.entries(feedbackDictionary[key]).map(
+                  ([subKey, value]) => (
+                    <div key={subKey} className="mb-5">
+                      <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
+                      {Array.isArray(value) ? (
+                        <ul className="list-disc pl-5">
+                          {value.map((item, index) => (
+                            <li key={index}>{item}</li> // List each item in "improvements"
+                          ))}
+                        </ul>
+                      ) : (
+                        <ul className="list-disc pl-5">
+                          <li>{value}</li>
+                        </ul>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
