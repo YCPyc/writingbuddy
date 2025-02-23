@@ -39,27 +39,27 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const feedbackButtons = [
     {
       title: "Thesis",
-      copy: "Get advice about your thesis",
+      copy: "Check your essay's topic and focus",
       prompt: THESIS_FEEDBACK_PROMPT,
     },
     {
       title: "Use of Evidence",
-      copy: "Get feedback on the sources you used and the way you incorporated them.",
+      copy: "Check how well you incorporated sources",
       prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
     },
     {
-      title: "Analysis of Evidence",
-      copy: "See how effectively your writing used evidence",
+      title: "Support",
+      copy: "Check that your ideas have adequate support details",
       prompt: SUPPORT_FEEDBACK_PROMPT,
     },
     {
       title: "Paragraph Structure",
-      copy: "Get tips about the structure of each paragraph",
+      copy: "Check that your paragraphs have all the required parts",
       prompt: PARAGRAPH_STRUCTURE_PROMPT,
     },
     {
       title: "Grammar",
-      copy: "Point out grammar errors",
+      copy: "Check for grammar mistakes",
       prompt: GRAMMAR,
     },
   ];
