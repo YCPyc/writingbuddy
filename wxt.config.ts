@@ -6,7 +6,7 @@ export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   manifest: () => ({
     key: import.meta.env.WXT_OAUTH_GOOGLE_KEY,
-    permissions: ["identity", "scripting", "activeTab"],
+    permissions: ["identity", "scripting", "activeTab", "sidePanel"],
     host_permissions: [
       "https://docs.google.com/document/*",
       "https://docs.google.com/*",

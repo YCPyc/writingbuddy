@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    @apply min-w-[500px];
-    @apply min-h-[500px];
-  }
-
 @layer base {
     :root {
         --background: 0 0% 100%;
@@ -62,5 +57,18 @@ body {
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
     }
 }
