@@ -6,8 +6,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { fetchDocumentContent } from "./extractText";
+} from "../ui/card";
+import { fetchDocumentContent } from "../../utils/extractText";
 
 function FeedbackCard({ title, copy, prompt_template, handleFeedback }: any) {
   const [feedback, setFeedback] = useState();

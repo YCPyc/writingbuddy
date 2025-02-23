@@ -8,7 +8,7 @@ import { LogoutButton } from "../auth/LogoutButton";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 
-import FeedbackCard from "../FeedbackCard";
+import FeedbackCard from "./FeedbackCard";
 
 type StudentDashboardProps = {
   userId: string;
