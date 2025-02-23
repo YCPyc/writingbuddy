@@ -34,6 +34,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      assignments: {
+        Row: {
+          assignment_code: string
+          class_code: string
+          created_at: string | null
+          exemplar: string | null
+          instruction: string
+          rubric: string | null
+          standard: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignment_code?: string
+          class_code: string
+          created_at?: string | null
+          exemplar?: string | null
+          instruction: string
+          rubric?: string | null
+          standard?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignment_code?: string
+          class_code?: string
+          created_at?: string | null
+          exemplar?: string | null
+          instruction?: string
+          rubric?: string | null
+          standard?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_class_code_fkey"
+            columns: ["class_code"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["class_code"]
+          },
+        ]
+      }
       chat_history: {
         Row: {
           created_at: string | null
@@ -97,6 +141,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          assignment_code: string | null
           class_code: string | null
           email: string
           first_name: string | null
@@ -106,6 +151,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          assignment_code?: string | null
           class_code?: string | null
           email: string
           first_name?: string | null
@@ -115,6 +161,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          assignment_code?: string | null
           class_code?: string | null
           email?: string
           first_name?: string | null
@@ -124,6 +171,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_assignment_code_fkey"
+            columns: ["assignment_code"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["assignment_code"]
+          },
           {
             foreignKeyName: "profiles_class_id_fkey"
             columns: ["class_code"]
