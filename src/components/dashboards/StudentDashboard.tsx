@@ -6,9 +6,18 @@ import { supabase } from "@/lib/supabaseClient";
 import { StudentToolsPage } from "./StudentToolsPage";
 import { LogoutButton } from "../auth/LogoutButton";
 import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+
+import FeedbackCard from "./FeedbackCard";
+
 type StudentDashboardProps = {
   userId: string;
 };
+import { THESIS_FEEDBACK_PROMPT } from "@/src/prompts/thesisPrompt";
+import { EVIDENCE_USE_FEEDBACK_PROMPT } from "@/src/prompts/evidencePrompt";
+import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
+import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
+import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const {
@@ -25,6 +34,35 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [showTools, setShowTools] = useState(false);
   const [inputtedClassCode, setInputtedClassCode] = useState("");
+  const [feedbackDictionary, setFeedbackDictionary] = useState({});
+
+  const feedbackButtons = [
+    {
+      title: "Thesis",
+      copy: "Check your essay's topic and focus",
+      prompt: THESIS_FEEDBACK_PROMPT,
+    },
+    {
+      title: "Use of Evidence",
+      copy: "Check how well you incorporated sources",
+      prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
+    },
+    {
+      title: "Support",
+      copy: "Check that your ideas have adequate support details",
+      prompt: SUPPORT_FEEDBACK_PROMPT,
+    },
+    {
+      title: "Paragraph Structure",
+      copy: "Check that your paragraphs have all the required parts",
+      prompt: PARAGRAPH_STRUCTURE_PROMPT,
+    },
+    {
+      title: "Grammar",
+      copy: "Check for grammar mistakes",
+      prompt: GRAMMAR,
+    },
+  ];
 
   // If student already has a class, show tools page
   if (classCode || showTools) {
@@ -54,6 +92,11 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     }
   };
 
+  const handleFeedback = ({ name, feedback }: any) => {
+    const newFeedback = { [name]: feedback };
+    setFeedbackDictionary((prev) => ({ ...prev, ...newFeedback }));
+  };
+
   return (
     <div className="student-panel">
       <div className="header">
@@ -76,6 +119,50 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
           {loading ? "Joining..." : "Join Class"}
         </Button>
         {error && <div className="error">{error}</div>}{" "}
+      </div>
+      <div>
+        <b>Targeted Feedback</b>
+        <Separator />
+      </div>
+      <div className="grid grid-cols-2 gap-4 p-4">
+        {feedbackButtons.map((item, index) => (
+          <FeedbackCard
+            title={item.title}
+            copy={item.copy}
+            prompt_template={item.prompt}
+            handleFeedback={handleFeedback}
+          />
+        ))}
+      </div>
+      <div>
+        {Object.keys(feedbackDictionary).length > 0 && (
+          <>
+            {Object.keys(feedbackDictionary).map((key) => (
+              <div key={key} className="mb-5">
+                <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
+                {/* Render the main key as a heading */}
+                {Object.entries(feedbackDictionary[key]).map(
+                  ([subKey, value]) => (
+                    <div key={subKey} className="mb-5">
+                      <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
+                      {Array.isArray(value) ? (
+                        <ul className="list-disc pl-5">
+                          {value.map((item, index) => (
+                            <li key={index}>{item}</li> // List each item in "improvements"
+                          ))}
+                        </ul>
+                      ) : (
+                        <ul className="list-disc pl-5">
+                          <li>{value}</li>
+                        </ul>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
