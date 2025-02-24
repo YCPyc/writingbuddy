@@ -138,11 +138,9 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         </p>
       </div>
 
-      <div>
+      <div className="flex flex-wrap gap-4 p-4">
         <h2 className="font-bold text-xl">What do you need help with?</h2>
         <Separator />
-      </div>
-      <div className="flex flex-wrap gap-4 p-4">
         {targetedFeedbackButtons.map((item, index) => (
           <FeedbackCard
             title={item.title}
