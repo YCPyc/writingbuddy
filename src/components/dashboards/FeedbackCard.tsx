@@ -8,8 +8,8 @@ import {
   CardTitle,
 } from "../ui/card";
 import { fetchDocumentContent } from "../../utils/extractText";
-
-function FeedbackCard({ title, copy, prompt_template, handleFeedback }: any) {
+import { Button } from "../ui/button";
+function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
   const [feedback, setFeedback] = useState();
   const handleClick = async () => {
     // Extract all document content
@@ -53,16 +53,9 @@ function FeedbackCard({ title, copy, prompt_template, handleFeedback }: any) {
   };
 
   return (
-    <>
-      <Card key={title} className="h-full" onClick={handleClick}>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>{copy}</CardContent>
-      </Card>
-    </>
+    <Button key={title} className="text-base" onClick={handleClick}>
+      {title}
+    </Button>
   );
 }
 

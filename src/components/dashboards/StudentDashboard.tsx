@@ -42,32 +42,26 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const targetedFeedbackButtons = [
     {
       title: "Thesis",
-      copy: "Check your essay's topic and focus",
       prompt: THESIS_FEEDBACK_PROMPT,
     },
     {
-      title: "Use of Evidence",
-      copy: "Check how well you incorporated sources",
+      title: "Paragraph Structure",
+      prompt: PARAGRAPH_STRUCTURE_PROMPT,
+    },
+    {
+      title: "Evidence",
       prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
     },
     {
       title: "Support",
-      copy: "Check that your ideas have adequate support details",
       prompt: SUPPORT_FEEDBACK_PROMPT,
     },
     {
-      title: "Paragraph Structure",
-      copy: "Check that your paragraphs have all the required parts",
-      prompt: PARAGRAPH_STRUCTURE_PROMPT,
-    },
-    {
       title: "Flow & Transitions",
-      copy: "Check that your ideas are connected well",
       prompt: TRANSITIONS_PROMPT,
     },
     {
       title: "Grammar",
-      copy: "Check for grammar mistakes",
       prompt: GRAMMAR,
     },
   ];
@@ -106,7 +100,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   };
 
   return (
-    <div className="student-panel">
+    <div className="student-panel p-4">
       <div className="header">
         <h2>Join a Class</h2>
         <LogoutButton />
@@ -129,14 +123,13 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         {error && <div className="error">{error}</div>}{" "}
       </div>
       <div>
-        <b>Targeted Feedback</b>
+        <h2 className="font-bold text-xl">What do you need help with?</h2>
         <Separator />
       </div>
-      <div className="grid grid-cols-2 gap-4 p-4">
+      <div className="flex flex-wrap gap-4 p-4">
         {targetedFeedbackButtons.map((item, index) => (
           <FeedbackCard
             title={item.title}
-            copy={item.copy}
             prompt_template={item.prompt}
             handleFeedback={handleFeedback}
           />
