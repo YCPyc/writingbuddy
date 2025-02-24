@@ -122,6 +122,22 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         </Button>
         {error && <div className="error">{error}</div>}{" "}
       </div>
+
+      <div className="flex flex-wrap gap-4 p-4">
+        <Button className="w-full text-base">I'm Stuck</Button>
+        <p className="text-sm text-gray-600 mb-2">
+          I'm not sure what I should do next and need help going on.
+        </p>
+        <Button className="w-full text-base">I Need Targeted Feedback</Button>
+        <p className="text-sm text-gray-600 mb-2">
+          I want feedback on a specific part of my writing.
+        </p>
+        <Button className="w-full text-base">I Need General Feedback</Button>
+        <p className="text-sm text-gray-600 mb-2">
+          Tell me in general how I can improve this writing so far.
+        </p>
+      </div>
+
       <div>
         <h2 className="font-bold text-xl">What do you need help with?</h2>
         <Separator />
