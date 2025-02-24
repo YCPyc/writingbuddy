@@ -18,6 +18,7 @@ import { EVIDENCE_USE_FEEDBACK_PROMPT } from "@/src/prompts/evidencePrompt";
 import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
 import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
 import { GRAMMAR } from "@/src/prompts/grammarPrompt";
+import { TRANSITIONS_PROMPT } from "@/src/prompts/transitionPrompt";
 
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const {
@@ -34,9 +35,11 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [showTools, setShowTools] = useState(false);
   const [inputtedClassCode, setInputtedClassCode] = useState("");
-  const [feedbackDictionary, setFeedbackDictionary] = useState({});
+  const [targetedFeedbackDictionary, setTargetedFeedbackDictionary] = useState(
+    {}
+  );
 
-  const feedbackButtons = [
+  const targetedFeedbackButtons = [
     {
       title: "Thesis",
       copy: "Check your essay's topic and focus",
@@ -56,6 +59,11 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
       title: "Paragraph Structure",
       copy: "Check that your paragraphs have all the required parts",
       prompt: PARAGRAPH_STRUCTURE_PROMPT,
+    },
+    {
+      title: "Flow & Transitions",
+      copy: "Check that your ideas are connected well",
+      prompt: TRANSITIONS_PROMPT,
     },
     {
       title: "Grammar",
@@ -94,7 +102,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
   const handleFeedback = ({ name, feedback }: any) => {
     const newFeedback = { [name]: feedback };
-    setFeedbackDictionary((prev) => ({ ...prev, ...newFeedback }));
+    setTargetedFeedbackDictionary((prev) => ({ ...prev, ...newFeedback }));
   };
 
   return (
@@ -125,7 +133,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         <Separator />
       </div>
       <div className="grid grid-cols-2 gap-4 p-4">
-        {feedbackButtons.map((item, index) => (
+        {targetedFeedbackButtons.map((item, index) => (
           <FeedbackCard
             title={item.title}
             copy={item.copy}
@@ -135,13 +143,13 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         ))}
       </div>
       <div>
-        {Object.keys(feedbackDictionary).length > 0 && (
+        {Object.keys(targetedFeedbackDictionary).length > 0 && (
           <>
-            {Object.keys(feedbackDictionary).map((key) => (
+            {Object.keys(targetedFeedbackDictionary).map((key) => (
               <div key={key} className="mb-5">
                 <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
                 {/* Render the main key as a heading */}
-                {Object.entries(feedbackDictionary[key]).map(
+                {Object.entries(targetedFeedbackDictionary[key]).map(
                   ([subKey, value]) => (
                     <div key={subKey} className="mb-5">
                       <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
