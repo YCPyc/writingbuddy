@@ -38,6 +38,8 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const [targetedFeedbackDictionary, setTargetedFeedbackDictionary] = useState(
     {}
   );
+  const [showFeedbackOptions, setShowFeedbackOptions] = useState(false);
+  const [showHelpOptions, setShowHelpOptions] = useState(true);
 
   const targetedFeedbackButtons = [
     {
@@ -123,62 +125,105 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         {error && <div className="error">{error}</div>}{" "}
       </div>
 
-      <div className="flex flex-wrap gap-4 p-4">
-        <Button className="w-full text-base">I'm Stuck</Button>
-        <p className="text-sm text-gray-600 mb-2">
-          I'm not sure what I should do next and need help going on.
-        </p>
-        <Button className="w-full text-base">I Need Targeted Feedback</Button>
-        <p className="text-sm text-gray-600 mb-2">
-          I want feedback on a specific part of my writing.
-        </p>
-        <Button className="w-full text-base">I Need General Feedback</Button>
-        <p className="text-sm text-gray-600 mb-2">
-          Tell me in general how I can improve this writing so far.
-        </p>
-      </div>
+      {showHelpOptions && (
+        <div className="flex flex-wrap gap-4 p-4">
+          <Button
+            className="w-full text-base"
+            onClick={() => {
+              setShowHelpOptions(false);
+              setShowFeedbackOptions(true);
+            }}
+          >
+            I'm Stuck
+          </Button>
+          <p className="text-sm text-gray-600 mb-2">
+            I'm not sure what I should do next and need help going on.
+          </p>
+          <Button
+            className="w-full text-base"
+            onClick={() => {
+              setShowHelpOptions(false);
+              setShowFeedbackOptions(true);
+            }}
+          >
+            I Need Targeted Feedback
+          </Button>
+          <p className="text-sm text-gray-600 mb-2">
+            I want feedback on a specific part of my writing.
+          </p>
+          <Button
+            className="w-full text-base"
+            onClick={() => {
+              setShowHelpOptions(false);
+              setShowFeedbackOptions(true);
+            }}
+          >
+            I Need General Feedback
+          </Button>
+          <p className="text-sm text-gray-600 mb-2">
+            Tell me in general how I can improve this writing so far.
+          </p>
+        </div>
+      )}
 
-      <div className="flex flex-wrap gap-4 p-4">
-        <h2 className="font-bold text-xl">What do you need help with?</h2>
-        <Separator />
-        {targetedFeedbackButtons.map((item, index) => (
-          <FeedbackCard
-            title={item.title}
-            prompt_template={item.prompt}
-            handleFeedback={handleFeedback}
-          />
-        ))}
-      </div>
-      <div>
-        {Object.keys(targetedFeedbackDictionary).length > 0 && (
-          <>
-            {Object.keys(targetedFeedbackDictionary).map((key) => (
-              <div key={key} className="mb-5">
-                <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
-                {/* Render the main key as a heading */}
-                {Object.entries(targetedFeedbackDictionary[key]).map(
-                  ([subKey, value]) => (
-                    <div key={subKey} className="mb-5">
-                      <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
-                      {Array.isArray(value) ? (
-                        <ul className="list-disc pl-5">
-                          {value.map((item, index) => (
-                            <li key={index}>{item}</li> // List each item in "improvements"
-                          ))}
-                        </ul>
-                      ) : (
-                        <ul className="list-disc pl-5">
-                          <li>{value}</li>
-                        </ul>
-                      )}
-                    </div>
-                  )
-                )}
-              </div>
-            ))}
-          </>
-        )}
-      </div>
+      {showFeedbackOptions && (
+        <div className="flex flex-wrap gap-4 p-4">
+          <h2 className="font-bold text-xl">What do you need help with?</h2>
+          <Separator />
+
+          {/* Go back clickable text, right justified */}
+          <div className="w-full flex justify-end">
+            <p
+              className="text-blue-500 underline cursor-pointer"
+              onClick={() => {
+                setShowFeedbackOptions(false);
+                setShowHelpOptions(true);
+              }}
+            >
+              ← Go back
+            </p>
+          </div>
+
+          {targetedFeedbackButtons.map((item, index) => (
+            <FeedbackCard
+              key={index}
+              title={item.title}
+              prompt_template={item.prompt}
+              handleFeedback={handleFeedback}
+            />
+          ))}
+          <div>
+            {Object.keys(targetedFeedbackDictionary).length > 0 && (
+              <>
+                {Object.keys(targetedFeedbackDictionary).map((key) => (
+                  <div key={key} className="mb-5">
+                    <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
+                    {/* Render the main key as a heading */}
+                    {Object.entries(targetedFeedbackDictionary[key]).map(
+                      ([subKey, value]) => (
+                        <div key={subKey} className="mb-5">
+                          <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
+                          {Array.isArray(value) ? (
+                            <ul className="list-disc pl-5">
+                              {value.map((item, index) => (
+                                <li key={index}>{item}</li> // List each item in "improvements"
+                              ))}
+                            </ul>
+                          ) : (
+                            <ul className="list-disc pl-5">
+                              <li>{value}</li>
+                            </ul>
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
