@@ -40,6 +40,9 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   );
   const [showFeedbackOptions, setShowFeedbackOptions] = useState(false);
   const [showHelpOptions, setShowHelpOptions] = useState(true);
+  const [showStuckOptions, setShowStuckOptions] = useState(false);
+  const [showGeneralFeedbackOptions, setShowGeneralFeedbackOptions] =
+    useState(false);
 
   const targetedFeedbackButtons = [
     {
@@ -131,7 +134,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
             className="w-full text-base"
             onClick={() => {
               setShowHelpOptions(false);
-              setShowFeedbackOptions(true);
+              setShowStuckOptions(true);
             }}
           >
             I'm Stuck
@@ -155,7 +158,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
             className="w-full text-base"
             onClick={() => {
               setShowHelpOptions(false);
-              setShowFeedbackOptions(true);
+              setShowGeneralFeedbackOptions(true);
             }}
           >
             I Need General Feedback
@@ -166,15 +169,29 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         </div>
       )}
 
-      {showFeedbackOptions && (
+      {showStuckOptions && (
         <div className="flex flex-wrap gap-4 p-4">
-          <h2 className="font-bold text-xl">What do you need help with?</h2>
-          <Separator />
-
-          {/* Go back clickable text, right justified */}
           <div className="w-full flex justify-end">
             <p
-              className="text-blue-500 underline cursor-pointer"
+              className="text-blue-500 text-base underline cursor-pointer"
+              onClick={() => {
+                setShowStuckOptions(false);
+                setShowHelpOptions(true);
+              }}
+            >
+              ← Go back
+            </p>
+          </div>
+          <h2 className="font-bold text-xl">How can I help?</h2>
+          <Separator />
+        </div>
+      )}
+
+      {showFeedbackOptions && (
+        <div className="flex flex-wrap gap-4 p-4">
+          <div className="w-full flex justify-end">
+            <p
+              className="text-blue-500 text-base underline cursor-pointer"
               onClick={() => {
                 setShowFeedbackOptions(false);
                 setShowHelpOptions(true);
@@ -183,6 +200,8 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               ← Go back
             </p>
           </div>
+          <h2 className="font-bold text-xl">What do you need help with?</h2>
+          <Separator />
 
           {targetedFeedbackButtons.map((item, index) => (
             <FeedbackCard
@@ -222,6 +241,24 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               </>
             )}
           </div>
+        </div>
+      )}
+
+      {showGeneralFeedbackOptions && (
+        <div className="flex flex-wrap gap-4 p-4">
+          <div className="w-full flex justify-end">
+            <p
+              className="text-blue-500 text-base underline cursor-pointer"
+              onClick={() => {
+                setShowGeneralFeedbackOptions(false);
+                setShowHelpOptions(true);
+              }}
+            >
+              ← Go back
+            </p>
+          </div>
+          <h2 className="font-bold text-xl">What would you like help with?</h2>
+          <Separator />
         </div>
       )}
     </div>
