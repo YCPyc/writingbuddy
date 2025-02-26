@@ -219,7 +219,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
       )}
 
       {selectedFeedback && (
-        <div className="flex flex-wrap gap-4 p-4">
+        <div className="flex flex-col gap-4 p-4">
           <GoBackButton
             onClick={() => {
               setSelectedFeedback(null);
@@ -228,6 +228,11 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
           />
           <h2 className="font-bold text-xl">{selectedFeedback} Feedback</h2>
           <Separator />
+          <div>
+            <div className="text-gray-500 italic text-sm mt-1">
+              <p>Disclaimer: This is an AI-generated response.</p>
+            </div>
+          </div>
           <div>
             {Object.keys(targetedFeedbackDictionary).length > 0 && (
               <>
