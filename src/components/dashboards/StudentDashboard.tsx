@@ -19,6 +19,7 @@ import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
 import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
 import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 import { TRANSITIONS_PROMPT } from "@/src/prompts/transitionPrompt";
+import GoBackButton from "./GoBackButton";
 
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const {
@@ -43,6 +44,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const [showStuckOptions, setShowStuckOptions] = useState(false);
   const [showGeneralFeedbackOptions, setShowGeneralFeedbackOptions] =
     useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
 
   const targetedFeedbackButtons = [
     {
@@ -102,6 +104,8 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const handleFeedback = ({ name, feedback }: any) => {
     const newFeedback = { [name]: feedback };
     setTargetedFeedbackDictionary((prev) => ({ ...prev, ...newFeedback }));
+    setSelectedFeedback(name);
+    setShowFeedbackOptions(false);
   };
 
   return (
@@ -171,38 +175,25 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
       {showStuckOptions && (
         <div className="flex flex-wrap gap-4 p-4">
-          <div className="w-full flex justify-end">
-            <p
-              className="text-blue-500 text-base underline cursor-pointer"
-              onClick={() => {
-                setShowStuckOptions(false);
-                setShowHelpOptions(true);
-              }}
-            >
-              ← Go back
-            </p>
-          </div>
+          <GoBackButton
+            onClick={() => {
+              setShowStuckOptions(false);
+              setShowHelpOptions(true);
+            }}
+          />
           <h2 className="font-bold text-xl">How can I help?</h2>
           <Separator />
         </div>
       )}
 
-      {showFeedbackOptions && (
+      {showFeedbackOptions && !selectedFeedback && (
         <div className="flex flex-wrap gap-4 p-4">
-          <div className="w-full flex justify-end">
-            <p
-              className="text-blue-500 text-base underline cursor-pointer"
-              onClick={() => {
-                setShowFeedbackOptions(false);
-                setShowHelpOptions(true);
-              }}
-            >
-              ← Go back
-            </p>
-          </div>
-          <h2 className="font-bold text-xl">What do you need help with?</h2>
-          <Separator />
-
+          <GoBackButton
+            onClick={() => {
+              setShowFeedbackOptions(false);
+              setShowHelpOptions(true);
+            }}
+          />
           {targetedFeedbackButtons.map((item, index) => (
             <FeedbackCard
               key={index}
@@ -211,13 +202,38 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               handleFeedback={handleFeedback}
             />
           ))}
+        </div>
+      )}
+
+      {showGeneralFeedbackOptions && (
+        <div className="flex flex-wrap gap-4 p-4">
+          <GoBackButton
+            onClick={() => {
+              setShowGeneralFeedbackOptions(false);
+              setShowHelpOptions(true);
+            }}
+          />
+          <h2 className="font-bold text-xl">What would you like help with?</h2>
+          <Separator />
+        </div>
+      )}
+
+      {selectedFeedback && (
+        <div className="flex flex-wrap gap-4 p-4">
+          <GoBackButton
+            onClick={() => {
+              setSelectedFeedback(null);
+              setShowFeedbackOptions(true);
+            }}
+          />
+          <h2 className="font-bold text-xl">{selectedFeedback} Feedback</h2>
+          <Separator />
           <div>
             {Object.keys(targetedFeedbackDictionary).length > 0 && (
               <>
                 {Object.keys(targetedFeedbackDictionary).map((key) => (
                   <div key={key} className="mb-5">
                     <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
-                    {/* Render the main key as a heading */}
                     {Object.entries(targetedFeedbackDictionary[key]).map(
                       ([subKey, value]) => (
                         <div key={subKey} className="mb-5">
@@ -225,7 +241,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
                           {Array.isArray(value) ? (
                             <ul className="list-disc pl-5">
                               {value.map((item, index) => (
-                                <li key={index}>{item}</li> // List each item in "improvements"
+                                <li key={index}>{item}</li>
                               ))}
                             </ul>
                           ) : (
@@ -241,24 +257,6 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               </>
             )}
           </div>
-        </div>
-      )}
-
-      {showGeneralFeedbackOptions && (
-        <div className="flex flex-wrap gap-4 p-4">
-          <div className="w-full flex justify-end">
-            <p
-              className="text-blue-500 text-base underline cursor-pointer"
-              onClick={() => {
-                setShowGeneralFeedbackOptions(false);
-                setShowHelpOptions(true);
-              }}
-            >
-              ← Go back
-            </p>
-          </div>
-          <h2 className="font-bold text-xl">What would you like help with?</h2>
-          <Separator />
         </div>
       )}
     </div>

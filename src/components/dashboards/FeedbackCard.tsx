@@ -41,9 +41,8 @@ function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
       responseFeedback = data.choices[0]?.message?.content || "No response";
       const feedbackDictionary: Record<string, string> =
         JSON.parse(responseFeedback);
-
       handleFeedback({
-        name: prompt_template.name,
+        name: title,
         feedback: feedbackDictionary,
       });
     } catch (error) {
