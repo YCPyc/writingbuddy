@@ -45,6 +45,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const [showGeneralFeedbackOptions, setShowGeneralFeedbackOptions] =
     useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
+  const [feedbackSource, setFeedbackSource] = useState<string | null>(null);
 
   const targetedFeedbackButtons = [
     {
@@ -70,6 +71,25 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     {
       title: "Grammar",
       prompt: GRAMMAR,
+    },
+  ];
+
+  const stuckSupportButtons = [
+    {
+      title: "Brainstorming",
+      prompt: THESIS_FEEDBACK_PROMPT,
+    },
+    {
+      title: "temp",
+      prompt: PARAGRAPH_STRUCTURE_PROMPT,
+    },
+    {
+      title: "temp",
+      prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
+    },
+    {
+      title: "temp",
+      prompt: SUPPORT_FEEDBACK_PROMPT,
     },
   ];
 
@@ -139,6 +159,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
             onClick={() => {
               setShowHelpOptions(false);
               setShowStuckOptions(true);
+              setFeedbackSource("stuck");
             }}
           >
             I'm Stuck
@@ -151,6 +172,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
             onClick={() => {
               setShowHelpOptions(false);
               setShowFeedbackOptions(true);
+              setFeedbackSource("targeted");
             }}
           >
             I Need Targeted Feedback
@@ -173,7 +195,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         </div>
       )}
 
-      {showStuckOptions && (
+      {showStuckOptions && !selectedFeedback && (
         <div className="flex flex-wrap gap-4 p-4">
           <GoBackButton
             onClick={() => {
@@ -183,6 +205,14 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
           />
           <h2 className="font-bold text-xl">How can I help?</h2>
           <Separator />
+          {stuckSupportButtons.map((item, index) => (
+            <FeedbackCard
+              key={index}
+              title={item.title}
+              prompt_template={item.prompt}
+              handleFeedback={handleFeedback}
+            />
+          ))}
         </div>
       )}
 
@@ -222,8 +252,12 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         <div className="flex flex-col gap-4 p-4">
           <GoBackButton
             onClick={() => {
+              if (feedbackSource === "stuck") {
+                setShowStuckOptions(true);
+              } else if (feedbackSource === "targeted") {
+                setShowFeedbackOptions(true);
+              }
               setSelectedFeedback(null);
-              setShowFeedbackOptions(true);
             }}
           />
           <h2 className="font-bold text-xl">{selectedFeedback} Feedback</h2>
