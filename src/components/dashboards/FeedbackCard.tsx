@@ -1,14 +1,8 @@
 import appConfig from "@/app.config";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
 import { fetchDocumentContent } from "../../utils/extractText";
 import { Button } from "../ui/button";
+import { createClient } from "@supabase/supabase-js";
+
 function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
   const [feedback, setFeedback] = useState();
   const handleClick = async () => {
@@ -45,6 +39,23 @@ function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
         name: title,
         feedback: feedbackDictionary,
       });
+
+      const supabase = createClient(
+        appConfig.supabaseUrl,
+        appConfig.supabaseKey
+      );
+      const createChatHistory = async () => {
+        const { data, error } = await supabase.from("chat_history").insert([
+          {
+            tool_name: title,
+            messages: [feedbackDictionary],
+            student_id: "temp-4fabc89c-ded5-4f14-b9d2-7e25bfe361ac",
+          },
+        ]);
+      };
+
+      // Call the function
+      createChatHistory();
     } catch (error) {
       console.error("Error:", error);
       responseFeedback = "Error fetching classification";
