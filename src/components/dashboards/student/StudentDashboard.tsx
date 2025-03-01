@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { useAuth } from "../../auth/AuthProvider";
 import { classService } from "@/src/domains/class/service";
 import { classRepository } from "@/src/domains/class/repository";
@@ -13,15 +14,12 @@ import { Input } from "../../ui/input";
 type StudentDashboardProps = {
   userId: string;
 };
-import { THESIS_FEEDBACK_PROMPT } from "@/src/prompts/thesisPrompt";
-import { EVIDENCE_USE_FEEDBACK_PROMPT } from "@/src/prompts/evidencePrompt";
-import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
-import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
-import { GRAMMAR } from "@/src/prompts/grammarPrompt";
-import { TRANSITIONS_PROMPT } from "@/src/prompts/transitionPrompt";
+
 import PageFrame from "./PageFrame";
 import FeedbackDisplay from "./FeedbackDisplay";
 import MainMenuOption from "./MainMenuOption";
+import { Prompts } from "@/src/prompts";
+
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const { id, email, role, classCode, setClassCode } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -43,46 +41,46 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const targetedFeedbackButtons = [
     {
       title: "Thesis",
-      prompt: THESIS_FEEDBACK_PROMPT,
+      prompt: Prompts.THESIS_FEEDBACK_PROMPT,
     },
     {
       title: "Paragraph Structure",
-      prompt: PARAGRAPH_STRUCTURE_PROMPT,
+      prompt: Prompts.PARAGRAPH_STRUCTURE_PROMPT,
     },
     {
       title: "Evidence",
-      prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
+      prompt: Prompts.EVIDENCE_USE_FEEDBACK_PROMPT,
     },
     {
       title: "Support",
-      prompt: SUPPORT_FEEDBACK_PROMPT,
+      prompt: Prompts.SUPPORT_FEEDBACK_PROMPT,
     },
     {
       title: "Flow & Transitions",
-      prompt: TRANSITIONS_PROMPT,
+      prompt: Prompts.TRANSITIONS_PROMPT,
     },
     {
       title: "Grammar",
-      prompt: GRAMMAR,
+      prompt: Prompts.GRAMMAR,
     },
   ];
 
   const stuckSupportButtons = [
     {
       title: "Brainstorming",
-      prompt: THESIS_FEEDBACK_PROMPT,
+      prompt: Prompts.THESIS_FEEDBACK_PROMPT,
     },
     {
       title: "temp",
-      prompt: PARAGRAPH_STRUCTURE_PROMPT,
+      prompt: Prompts.PARAGRAPH_STRUCTURE_PROMPT,
     },
     {
       title: "temp",
-      prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
+      prompt: Prompts.EVIDENCE_USE_FEEDBACK_PROMPT,
     },
     {
       title: "temp",
-      prompt: SUPPORT_FEEDBACK_PROMPT,
+      prompt: Prompts.SUPPORT_FEEDBACK_PROMPT,
     },
   ];
 
