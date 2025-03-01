@@ -353,20 +353,6 @@ export function AssignmentCreationPage({
                   <p className="text-sm font-medium text-muted-foreground mb-1">
                     Assignment Created Successfully!
                   </p>
-                  <div className="flex items-center gap-2">
-                    <code className="relative rounded bg-muted-foreground/20 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-                      {assignmentCode}
-                    </code>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        navigator.clipboard.writeText(assignmentCode)
-                      }
-                    >
-                      Copy
-                    </Button>
-                  </div>
                 </div>
               )}
             </form>
