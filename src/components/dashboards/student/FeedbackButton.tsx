@@ -1,6 +1,6 @@
 import appConfig from "@/app.config";
-import { fetchDocumentContent } from "../../utils/extractText";
-import { Button } from "../ui/button";
+import { fetchDocumentContent } from "../../../utils/extractText";
+import { Button } from "../../ui/button";
 import { createClient } from "@supabase/supabase-js";
 
 function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
@@ -15,26 +15,31 @@ function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
     let responseFeedback = "";
 
     try {
-      const response = await fetch(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${appConfig.openaiApiKey}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-4",
-            messages: [{ role: "user", content: prompt }],
-            store: true,
-          }),
-        }
-      );
+      // const response = await fetch(
+      //   "https://api.openai.com/v1/chat/completions",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${appConfig.openaiApiKey}`,
+      //     },
+      //     body: JSON.stringify({
+      //       model: "gpt-4",
+      //       messages: [{ role: "user", content: prompt }],
+      //       store: true,
+      //     }),
+      //   }
+      // );
 
-      const data = await response.json();
-      responseFeedback = data.choices[0]?.message?.content || "No response";
-      const feedbackDictionary: Record<string, string> =
-        JSON.parse(responseFeedback);
+      // const data = await response.json();
+      // responseFeedback = data.choices[0]?.message?.content || "No response";
+      // const feedbackDictionary: Record<string, string> =
+      //   JSON.parse(responseFeedback);
+      const feedbackDictionary = {
+        praise: "Good job",
+        improvements: ["Do better", "Don't do worse"],
+      };
+
       handleFeedback({
         name: title,
         feedback: feedbackDictionary,
@@ -49,7 +54,7 @@ function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
           {
             tool_name: title,
             messages: [feedbackDictionary],
-            student_id: "temp-4fabc89c-ded5-4f14-b9d2-7e25bfe361ac",
+            student_id: "4fabc89c-ded5-4f14-b9d2-7e25bfe361ac",
           },
         ]);
       };

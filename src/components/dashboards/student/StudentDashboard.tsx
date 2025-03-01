@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { useAuth } from "../auth/AuthProvider";
+import { useAuth } from "../../auth/AuthProvider";
 import { classService } from "@/src/domains/class/service";
 import { classRepository } from "@/src/domains/class/repository";
 import { supabase } from "@/lib/supabaseClient";
-import { StudentToolsPage } from "./StudentToolsPage";
-import { LogoutButton } from "../auth/LogoutButton";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { Label } from "../ui/label";
-import FeedbackCard from "./FeedbackCard";
-import { Input } from "../ui/input";
+import { StudentToolsPage } from "../StudentToolsPage";
+import { LogoutButton } from "../../auth/LogoutButton";
+import { Button } from "../../ui/button";
+import { Separator } from "../../ui/separator";
+import { Label } from "../../ui/label";
+import FeedbackCard from "./FeedbackButton";
+import { Input } from "../../ui/input";
 type StudentDashboardProps = {
   userId: string;
 };
@@ -20,7 +20,7 @@ import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructureProm
 import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 import { TRANSITIONS_PROMPT } from "@/src/prompts/transitionPrompt";
 import GoBackButton from "./GoBackButton";
-
+import PageFrame from "./PageFrame";
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const {
     id,
@@ -132,6 +132,30 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     setShowFeedbackOptions(false);
   };
 
+  const handleBackFromStuckOptions = () => {
+    setShowStuckOptions(false);
+    setShowHelpOptions(true);
+  };
+
+  const handleBackFromTargetedFeedbackOptions = () => {
+    setShowFeedbackOptions(false);
+    setShowHelpOptions(true);
+  };
+
+  const handleBackFromGeneralFeedback = () => {
+    setShowGeneralFeedbackOptions(false);
+    setShowHelpOptions(true);
+  };
+
+  const handleBackFromFeedbackDisplay = () => {
+    if (feedbackSource === "stuck") {
+      setShowStuckOptions(true);
+    } else if (feedbackSource === "targeted") {
+      setShowFeedbackOptions(true);
+    }
+    setSelectedFeedback(null);
+  };
+
   return (
     <div className="student-panel p-4">
       <div className="header flex justify-end">
@@ -214,15 +238,10 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
           )}
 
           {showStuckOptions && !selectedFeedback && (
-            <div className="flex flex-wrap gap-4 p-4">
-              <GoBackButton
-                onClick={() => {
-                  setShowStuckOptions(false);
-                  setShowHelpOptions(true);
-                }}
-              />
-              <h2 className="font-bold text-xl">What are you stuck on?</h2>
-              <Separator />
+            <PageFrame
+              onBackClick={handleBackFromStuckOptions}
+              title="What are you stuck on?"
+            >
               {stuckSupportButtons.map((item, index) => (
                 <FeedbackCard
                   key={index}
@@ -231,21 +250,14 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
                   handleFeedback={handleFeedback}
                 />
               ))}
-            </div>
+            </PageFrame>
           )}
 
           {showFeedbackOptions && !selectedFeedback && (
-            <div className="flex flex-wrap gap-4 p-4">
-              <GoBackButton
-                onClick={() => {
-                  setShowFeedbackOptions(false);
-                  setShowHelpOptions(true);
-                }}
-              />
-              <h2 className="font-bold text-xl">
-                {selectedFeedback} What feedback would you like?
-              </h2>
-              <Separator />
+            <PageFrame
+              onBackClick={handleBackFromTargetedFeedbackOptions}
+              title="What feedback would you like?"
+            >
               {targetedFeedbackButtons.map((item, index) => (
                 <FeedbackCard
                   key={index}
@@ -254,75 +266,62 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
                   handleFeedback={handleFeedback}
                 />
               ))}
-            </div>
+            </PageFrame>
           )}
 
           {showGeneralFeedbackOptions && (
-            <div className="flex flex-wrap gap-4 p-4">
-              <GoBackButton
-                onClick={() => {
-                  setShowGeneralFeedbackOptions(false);
-                  setShowHelpOptions(true);
-                }}
-              />
-              <h2 className="font-bold text-xl">
-                What do you want to work on?
-              </h2>
-              <Separator />
-            </div>
+            <PageFrame
+              onBackClick={handleBackFromGeneralFeedback}
+              title="What do you want to work on?"
+            >
+              <p>Chat-inteface-goes-here</p>
+            </PageFrame>
           )}
 
           {selectedFeedback && (
-            <div className="flex flex-col gap-4 p-4">
-              <GoBackButton
-                onClick={() => {
-                  if (feedbackSource === "stuck") {
-                    setShowStuckOptions(true);
-                  } else if (feedbackSource === "targeted") {
-                    setShowFeedbackOptions(true);
-                  }
-                  setSelectedFeedback(null);
-                }}
-              />
-              <h2 className="font-bold text-xl">{selectedFeedback} Feedback</h2>
-              <Separator />
-              <div>
-                <div className="text-gray-500 italic text-sm mt-1">
-                  <p>Disclaimer: This is an AI-generated response.</p>
+            <>
+              <PageFrame
+                onBackClick={handleBackFromFeedbackDisplay}
+                title="Feedback"
+              >
+                <div>
+                  <div className="text-gray-500 italic text-sm mt-1">
+                    <p>Disclaimer: This is an AI-generated response.</p>
+                  </div>
                 </div>
-              </div>
-              <div>
-                {Object.keys(targetedFeedbackDictionary).length > 0 && (
-                  <>
-                    {Object.keys(targetedFeedbackDictionary).map((key) => (
-                      <div key={key} className="mb-5">
-                        <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
-                        {Object.entries(targetedFeedbackDictionary[key]).map(
-                          ([subKey, value]) => (
-                            <div key={subKey} className="mb-5">
-                              <h3 className="font-bold mb-0.5 text-xs">
-                                {subKey}
-                              </h3>
-                              {Array.isArray(value) ? (
-                                <ul className="list-disc pl-5">
-                                  {value.map((item, index) => (
-                                    <li key={index}>{item}</li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <ul className="list-disc pl-5">
-                                  <li>{value}</li>
-                                </ul>
-                              )}
-                            </div>
-                          )
-                        )}
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
-            </div>
+                <div>
+                  {Object.keys(targetedFeedbackDictionary).length > 0 && (
+                    <>
+                      {Object.keys(targetedFeedbackDictionary).map((key) => (
+                        <div key={key} className="mb-5">
+                          <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
+                          {Object.entries(targetedFeedbackDictionary[key]).map(
+                            ([subKey, value]) => (
+                              <div key={subKey} className="mb-5">
+                                <h3 className="font-bold mb-0.5 text-xs">
+                                  {subKey}
+                                </h3>
+                                {Array.isArray(value) ? (
+                                  <ul className="list-disc pl-5">
+                                    {value.map((item, index) => (
+                                      <li key={index}>{item}</li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <ul className="list-disc pl-5">
+                                    <li>{value}</li>
+                                  </ul>
+                                )}
+                              </div>
+                            )
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </PageFrame>
+            </>
           )}
         </>
       )}
