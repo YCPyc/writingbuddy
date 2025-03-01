@@ -20,6 +20,7 @@ import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructureProm
 import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 import { TRANSITIONS_PROMPT } from "@/src/prompts/transitionPrompt";
 import PageFrame from "./PageFrame";
+import FeedbackDisplay from "./FeedbackDisplay";
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const { id, email, role, classCode, setClassCode } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -271,42 +272,8 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
                 onBackClick={() => handleBack("feedback")}
                 title="Feedback"
               >
-                <div>
-                  <div className="text-gray-500 italic text-sm mt-1">
-                    <p>Disclaimer: This is an AI-generated response.</p>
-                  </div>
-                </div>
-                <div>
-                  {Object.keys(targetedFeedbackDictionary).length > 0 && (
-                    <>
-                      {Object.keys(targetedFeedbackDictionary).map((key) => (
-                        <div key={key} className="mb-5">
-                          <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
-                          {Object.entries(targetedFeedbackDictionary[key]).map(
-                            ([subKey, value]) => (
-                              <div key={subKey} className="mb-5">
-                                <h3 className="font-bold mb-0.5 text-xs">
-                                  {subKey}
-                                </h3>
-                                {Array.isArray(value) ? (
-                                  <ul className="list-disc pl-5">
-                                    {value.map((item, index) => (
-                                      <li key={index}>{item}</li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <ul className="list-disc pl-5">
-                                    <li>{value}</li>
-                                  </ul>
-                                )}
-                              </div>
-                            )
-                          )}
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </div>
+                {/* Note: Need to adjust this to use stuck feedback later */}
+                <FeedbackDisplay feedback={targetedFeedbackDictionary} />
               </PageFrame>
             </>
           )}
