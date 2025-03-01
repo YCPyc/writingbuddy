@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    @apply min-w-[500px];
-  }
-
 @layer base {
     :root {
         --background: 0 0% 100%;
