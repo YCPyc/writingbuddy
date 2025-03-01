@@ -7,9 +7,9 @@ import { StudentToolsPage } from "./StudentToolsPage";
 import { LogoutButton } from "../auth/LogoutButton";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-
+import { Label } from "../ui/label";
 import FeedbackCard from "./FeedbackCard";
-
+import { Input } from "../ui/input";
 type StudentDashboardProps = {
   userId: string;
 };
@@ -46,6 +46,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
   const [feedbackSource, setFeedbackSource] = useState<string | null>(null);
+  const [enteredValidClassCode, setEnteredValidClassCode] = useState(false);
 
   const targetedFeedbackButtons = [
     {
@@ -99,6 +100,9 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   }
 
   const joinClass = async () => {
+    // TODO: Temporary pending database updates
+    setEnteredValidClassCode(true);
+    return;
     try {
       setLoading(true);
       const newClassService = classService(classRepository(supabase));
@@ -130,173 +134,197 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
   return (
     <div className="student-panel p-4">
-      <div className="header">
-        <h2>Join a Class</h2>
+      <div className="header flex justify-end">
         <LogoutButton />
       </div>
-      <div className="join-class-form">
-        <div className="form-group">
-          <label htmlFor="classCode">Class Code:</label>
-          <input
-            type="text"
-            id="classCode"
-            value={inputtedClassCode}
-            onChange={(e) => setInputtedClassCode(e.target.value.toUpperCase())}
-            placeholder="Enter class code"
-            required
-          />
-        </div>
-        <Button onClick={joinClass} disabled={loading || !inputtedClassCode}>
-          {loading ? "Joining..." : "Join Class"}
-        </Button>
-        {error && <div className="error">{error}</div>}{" "}
-      </div>
 
-      {showHelpOptions && (
-        <div className="flex flex-wrap gap-4 p-4">
-          <Button
-            className="w-full text-base"
-            onClick={() => {
-              setShowHelpOptions(false);
-              setShowStuckOptions(true);
-              setFeedbackSource("stuck");
-            }}
-          >
-            I'm Stuck
-          </Button>
-          <p className="text-sm text-gray-600 mb-2">
-            I'm not sure what I should do next and need help going on.
-          </p>
-          <Button
-            className="w-full text-base"
-            onClick={() => {
-              setShowHelpOptions(false);
-              setShowFeedbackOptions(true);
-              setFeedbackSource("targeted");
-            }}
-          >
-            I Need Targeted Feedback
-          </Button>
-          <p className="text-sm text-gray-600 mb-2">
-            I want feedback on a specific part of my writing.
-          </p>
-          <Button
-            className="w-full text-base"
-            onClick={() => {
-              setShowHelpOptions(false);
-              setShowGeneralFeedbackOptions(true);
-            }}
-          >
-            I Need General Feedback
-          </Button>
-          <p className="text-sm text-gray-600 mb-2">
-            Tell me in general how I can improve this writing so far.
-          </p>
-        </div>
-      )}
-
-      {showStuckOptions && !selectedFeedback && (
-        <div className="flex flex-wrap gap-4 p-4">
-          <GoBackButton
-            onClick={() => {
-              setShowStuckOptions(false);
-              setShowHelpOptions(true);
-            }}
-          />
-          <h2 className="font-bold text-xl">How can I help?</h2>
-          <Separator />
-          {stuckSupportButtons.map((item, index) => (
-            <FeedbackCard
-              key={index}
-              title={item.title}
-              prompt_template={item.prompt}
-              handleFeedback={handleFeedback}
-            />
-          ))}
-        </div>
-      )}
-
-      {showFeedbackOptions && !selectedFeedback && (
-        <div className="flex flex-wrap gap-4 p-4">
-          <GoBackButton
-            onClick={() => {
-              setShowFeedbackOptions(false);
-              setShowHelpOptions(true);
-            }}
-          />
-          {targetedFeedbackButtons.map((item, index) => (
-            <FeedbackCard
-              key={index}
-              title={item.title}
-              prompt_template={item.prompt}
-              handleFeedback={handleFeedback}
-            />
-          ))}
-        </div>
-      )}
-
-      {showGeneralFeedbackOptions && (
-        <div className="flex flex-wrap gap-4 p-4">
-          <GoBackButton
-            onClick={() => {
-              setShowGeneralFeedbackOptions(false);
-              setShowHelpOptions(true);
-            }}
-          />
+      {enteredValidClassCode && showHelpOptions && (
+        <div className="mt-6 gap-4 p-4">
           <h2 className="font-bold text-xl">What would you like help with?</h2>
           <Separator />
         </div>
       )}
 
-      {selectedFeedback && (
-        <div className="flex flex-col gap-4 p-4">
-          <GoBackButton
-            onClick={() => {
-              if (feedbackSource === "stuck") {
-                setShowStuckOptions(true);
-              } else if (feedbackSource === "targeted") {
-                setShowFeedbackOptions(true);
+      {!enteredValidClassCode && (
+        <div className="join-class-form flex flex-wrap gap-4 p-4">
+          <h2 className="font-bold text-xl">Join a Class</h2>
+          <div className="form-group">
+            <Label htmlFor="classCode">Class Code:</Label>
+            <Input
+              type="text"
+              id="classCode"
+              value={inputtedClassCode}
+              onChange={(e) =>
+                setInputtedClassCode(e.target.value.toUpperCase())
               }
-              setSelectedFeedback(null);
-            }}
-          />
-          <h2 className="font-bold text-xl">{selectedFeedback} Feedback</h2>
-          <Separator />
-          <div>
-            <div className="text-gray-500 italic text-sm mt-1">
-              <p>Disclaimer: This is an AI-generated response.</p>
-            </div>
+              placeholder="Enter class code"
+              required
+            />
           </div>
-          <div>
-            {Object.keys(targetedFeedbackDictionary).length > 0 && (
-              <>
-                {Object.keys(targetedFeedbackDictionary).map((key) => (
-                  <div key={key} className="mb-5">
-                    <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
-                    {Object.entries(targetedFeedbackDictionary[key]).map(
-                      ([subKey, value]) => (
-                        <div key={subKey} className="mb-5">
-                          <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
-                          {Array.isArray(value) ? (
-                            <ul className="list-disc pl-5">
-                              {value.map((item, index) => (
-                                <li key={index}>{item}</li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <ul className="list-disc pl-5">
-                              <li>{value}</li>
-                            </ul>
-                          )}
-                        </div>
-                      )
-                    )}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
+          <Button onClick={joinClass} disabled={loading || !inputtedClassCode}>
+            {loading ? "Joining..." : "Join Class"}
+          </Button>
+          {error && <div className="error">{error}</div>}{" "}
         </div>
+      )}
+
+      {enteredValidClassCode && (
+        <>
+          {showHelpOptions && (
+            <div className="flex flex-wrap gap-4 p-4">
+              <Button
+                className="w-full text-base"
+                onClick={() => {
+                  setShowHelpOptions(false);
+                  setShowStuckOptions(true);
+                  setFeedbackSource("stuck");
+                }}
+              >
+                I'm Stuck
+              </Button>
+              <p className="text-sm text-gray-600 mb-2">
+                I'm not sure what I should do next and need help going on.
+              </p>
+              <Button
+                className="w-full text-base"
+                onClick={() => {
+                  setShowHelpOptions(false);
+                  setShowFeedbackOptions(true);
+                  setFeedbackSource("targeted");
+                }}
+              >
+                I Need Targeted Feedback
+              </Button>
+              <p className="text-sm text-gray-600 mb-2">
+                I want feedback on a specific part of my writing.
+              </p>
+              <Button
+                className="w-full text-base"
+                onClick={() => {
+                  setShowHelpOptions(false);
+                  setShowGeneralFeedbackOptions(true);
+                }}
+              >
+                I Need General Feedback
+              </Button>
+              <p className="text-sm text-gray-600 mb-2">
+                Tell me in general how I can improve this writing so far.
+              </p>
+            </div>
+          )}
+
+          {showStuckOptions && !selectedFeedback && (
+            <div className="flex flex-wrap gap-4 p-4">
+              <GoBackButton
+                onClick={() => {
+                  setShowStuckOptions(false);
+                  setShowHelpOptions(true);
+                }}
+              />
+              <h2 className="font-bold text-xl">What are you stuck on?</h2>
+              <Separator />
+              {stuckSupportButtons.map((item, index) => (
+                <FeedbackCard
+                  key={index}
+                  title={item.title}
+                  prompt_template={item.prompt}
+                  handleFeedback={handleFeedback}
+                />
+              ))}
+            </div>
+          )}
+
+          {showFeedbackOptions && !selectedFeedback && (
+            <div className="flex flex-wrap gap-4 p-4">
+              <GoBackButton
+                onClick={() => {
+                  setShowFeedbackOptions(false);
+                  setShowHelpOptions(true);
+                }}
+              />
+              <h2 className="font-bold text-xl">
+                {selectedFeedback} What feedback would you like?
+              </h2>
+              <Separator />
+              {targetedFeedbackButtons.map((item, index) => (
+                <FeedbackCard
+                  key={index}
+                  title={item.title}
+                  prompt_template={item.prompt}
+                  handleFeedback={handleFeedback}
+                />
+              ))}
+            </div>
+          )}
+
+          {showGeneralFeedbackOptions && (
+            <div className="flex flex-wrap gap-4 p-4">
+              <GoBackButton
+                onClick={() => {
+                  setShowGeneralFeedbackOptions(false);
+                  setShowHelpOptions(true);
+                }}
+              />
+              <h2 className="font-bold text-xl">
+                What do you want to work on?
+              </h2>
+              <Separator />
+            </div>
+          )}
+
+          {selectedFeedback && (
+            <div className="flex flex-col gap-4 p-4">
+              <GoBackButton
+                onClick={() => {
+                  if (feedbackSource === "stuck") {
+                    setShowStuckOptions(true);
+                  } else if (feedbackSource === "targeted") {
+                    setShowFeedbackOptions(true);
+                  }
+                  setSelectedFeedback(null);
+                }}
+              />
+              <h2 className="font-bold text-xl">{selectedFeedback} Feedback</h2>
+              <Separator />
+              <div>
+                <div className="text-gray-500 italic text-sm mt-1">
+                  <p>Disclaimer: This is an AI-generated response.</p>
+                </div>
+              </div>
+              <div>
+                {Object.keys(targetedFeedbackDictionary).length > 0 && (
+                  <>
+                    {Object.keys(targetedFeedbackDictionary).map((key) => (
+                      <div key={key} className="mb-5">
+                        <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
+                        {Object.entries(targetedFeedbackDictionary[key]).map(
+                          ([subKey, value]) => (
+                            <div key={subKey} className="mb-5">
+                              <h3 className="font-bold mb-0.5 text-xs">
+                                {subKey}
+                              </h3>
+                              {Array.isArray(value) ? (
+                                <ul className="list-disc pl-5">
+                                  {value.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <ul className="list-disc pl-5">
+                                  <li>{value}</li>
+                                </ul>
+                              )}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
