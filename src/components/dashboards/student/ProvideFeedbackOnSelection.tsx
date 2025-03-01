@@ -1,5 +1,5 @@
 import appConfig from "@@/app.config";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 function ProvidedFeedbackOnSelection({ addFeedback, getSelectedText }: any) {
   const [text, setText] = useState<string>("");

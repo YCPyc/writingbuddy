@@ -1,5 +1,5 @@
-import { LogoutButton } from "../auth/LogoutButton";
-import ProvidedFeedbackOnSelection from "@/src/components/dashboards/ProvideFeedbackOnSelection";
+import { LogoutButton } from "../../auth/LogoutButton";
+import ProvidedFeedbackOnSelection from "@/src/components/dashboards/student/ProvideFeedbackOnSelection";
 import {
   Accordion,
   AccordionContent,

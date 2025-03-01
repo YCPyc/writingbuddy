@@ -3,7 +3,7 @@ import { useAuth } from "../../auth/AuthProvider";
 import { classService } from "@/src/domains/class/service";
 import { classRepository } from "@/src/domains/class/repository";
 import { supabase } from "@/lib/supabaseClient";
-import { StudentToolsPage } from "../StudentToolsPage";
+import { StudentToolsPage } from "./StudentToolsPage";
 import { LogoutButton } from "../../auth/LogoutButton";
 import { Button } from "../../ui/button";
 import { Separator } from "../../ui/separator";
