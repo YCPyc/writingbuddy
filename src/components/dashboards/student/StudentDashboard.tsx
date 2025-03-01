@@ -19,19 +19,9 @@ import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
 import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
 import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 import { TRANSITIONS_PROMPT } from "@/src/prompts/transitionPrompt";
-import GoBackButton from "./GoBackButton";
 import PageFrame from "./PageFrame";
 export function StudentDashboard({ userId }: StudentDashboardProps) {
-  const {
-    id,
-    email,
-    role,
-    classCode,
-    setRole,
-    setClassCode,
-    signInWithGoogle,
-    signOut,
-  } = useAuth();
+  const { id, email, role, classCode, setClassCode } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTools, setShowTools] = useState(false);
@@ -132,28 +122,25 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     setShowFeedbackOptions(false);
   };
 
-  const handleBackFromStuckOptions = () => {
-    setShowStuckOptions(false);
-    setShowHelpOptions(true);
-  };
-
-  const handleBackFromTargetedFeedbackOptions = () => {
-    setShowFeedbackOptions(false);
-    setShowHelpOptions(true);
-  };
-
-  const handleBackFromGeneralFeedback = () => {
-    setShowGeneralFeedbackOptions(false);
-    setShowHelpOptions(true);
-  };
-
-  const handleBackFromFeedbackDisplay = () => {
-    if (feedbackSource === "stuck") {
-      setShowStuckOptions(true);
-    } else if (feedbackSource === "targeted") {
-      setShowFeedbackOptions(true);
+  const handleBack = (source: string) => {
+    if (source === "stuck") {
+      setShowStuckOptions(false);
+      setShowHelpOptions(true);
+    } else if (source === "targeted") {
+      setShowFeedbackOptions(false);
+      setShowHelpOptions(true);
+    } else if (source === "general") {
+      setShowGeneralFeedbackOptions(false);
+      setShowHelpOptions(true);
+    } else {
+      // For feedback page
+      if (feedbackSource === "stuck") {
+        setShowStuckOptions(true);
+      } else if (feedbackSource === "targeted") {
+        setShowFeedbackOptions(true);
+      }
+      setSelectedFeedback(null);
     }
-    setSelectedFeedback(null);
   };
 
   return (
@@ -239,7 +226,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
           {showStuckOptions && !selectedFeedback && (
             <PageFrame
-              onBackClick={handleBackFromStuckOptions}
+              onBackClick={() => handleBack("stuck")}
               title="What are you stuck on?"
             >
               {stuckSupportButtons.map((item, index) => (
@@ -255,7 +242,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
           {showFeedbackOptions && !selectedFeedback && (
             <PageFrame
-              onBackClick={handleBackFromTargetedFeedbackOptions}
+              onBackClick={() => handleBack("targeted")}
               title="What feedback would you like?"
             >
               {targetedFeedbackButtons.map((item, index) => (
@@ -271,7 +258,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
           {showGeneralFeedbackOptions && (
             <PageFrame
-              onBackClick={handleBackFromGeneralFeedback}
+              onBackClick={() => handleBack("general")}
               title="What do you want to work on?"
             >
               <p>Chat-inteface-goes-here</p>
@@ -281,7 +268,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
           {selectedFeedback && (
             <>
               <PageFrame
-                onBackClick={handleBackFromFeedbackDisplay}
+                onBackClick={() => handleBack("feedback")}
                 title="Feedback"
               >
                 <div>
