@@ -1,24 +1,25 @@
 import { useState } from "react";
 
-import { useAuth } from "../../auth/AuthProvider";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import { Separator } from "../../ui/separator";
+
 import { classService } from "@/src/domains/class/service";
 import { classRepository } from "@/src/domains/class/repository";
+import FeedbackCard from "./FeedbackButton";
+import FeedbackDisplay from "./FeedbackDisplay";
+import { LogoutButton } from "../../auth/LogoutButton";
+import MainMenuOption from "./MainMenuOption";
+import PageFrame from "./PageFrame";
+import { Prompts } from "@/src/prompts";
 import { supabase } from "@/lib/supabaseClient";
 import { StudentToolsPage } from "./StudentToolsPage";
-import { LogoutButton } from "../../auth/LogoutButton";
-import { Button } from "../../ui/button";
-import { Separator } from "../../ui/separator";
-import { Label } from "../../ui/label";
-import FeedbackCard from "./FeedbackButton";
-import { Input } from "../../ui/input";
+import { useAuth } from "../../auth/AuthProvider";
+
 type StudentDashboardProps = {
   userId: string;
 };
-
-import PageFrame from "./PageFrame";
-import FeedbackDisplay from "./FeedbackDisplay";
-import MainMenuOption from "./MainMenuOption";
-import { Prompts } from "@/src/prompts";
 
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const { id, email, role, classCode, setClassCode } = useAuth();
