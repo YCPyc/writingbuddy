@@ -21,6 +21,7 @@ import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 import { TRANSITIONS_PROMPT } from "@/src/prompts/transitionPrompt";
 import PageFrame from "./PageFrame";
 import FeedbackDisplay from "./FeedbackDisplay";
+import MainMenuOption from "./MainMenuOption";
 export function StudentDashboard({ userId }: StudentDashboardProps) {
   const { id, email, role, classCode, setClassCode } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -184,44 +185,32 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         <>
           {showHelpOptions && (
             <div className="flex flex-wrap gap-4 p-4">
-              <Button
-                className="w-full text-base"
+              <MainMenuOption
+                buttonText="I'm Stuck"
+                description="I'm not sure what I should do next and need help going on."
                 onClick={() => {
                   setShowHelpOptions(false);
                   setShowStuckOptions(true);
                   setFeedbackSource("stuck");
                 }}
-              >
-                I'm Stuck
-              </Button>
-              <p className="text-sm text-gray-600 mb-2">
-                I'm not sure what I should do next and need help going on.
-              </p>
-              <Button
-                className="w-full text-base"
+              />
+              <MainMenuOption
+                buttonText="I Need Targeted Feedback"
+                description="I want feedback on a specific part of my writing."
                 onClick={() => {
                   setShowHelpOptions(false);
                   setShowFeedbackOptions(true);
                   setFeedbackSource("targeted");
                 }}
-              >
-                I Need Targeted Feedback
-              </Button>
-              <p className="text-sm text-gray-600 mb-2">
-                I want feedback on a specific part of my writing.
-              </p>
-              <Button
-                className="w-full text-base"
+              />
+              <MainMenuOption
+                buttonText="I Need General Feedback"
+                description="Tell me in general how I can improve this writing so far."
                 onClick={() => {
                   setShowHelpOptions(false);
                   setShowGeneralFeedbackOptions(true);
                 }}
-              >
-                I Need General Feedback
-              </Button>
-              <p className="text-sm text-gray-600 mb-2">
-                Tell me in general how I can improve this writing so far.
-              </p>
+              />
             </div>
           )}
 
