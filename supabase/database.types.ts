@@ -39,6 +39,7 @@ export type Database = {
           assignment_code: string
           class_code: string
           created_at: string | null
+          due_date: string
           exemplar: string | null
           instruction: string
           rubric: string | null
@@ -50,6 +51,7 @@ export type Database = {
           assignment_code?: string
           class_code: string
           created_at?: string | null
+          due_date: string
           exemplar?: string | null
           instruction: string
           rubric?: string | null
@@ -61,6 +63,7 @@ export type Database = {
           assignment_code?: string
           class_code?: string
           created_at?: string | null
+          due_date?: string
           exemplar?: string | null
           instruction?: string
           rubric?: string | null

@@ -7,6 +7,7 @@ export function standardsService(standardsRepository: StandardsRepository) {
       const standardSets = await Promise.all(
         ids.map((id) => standardsRepository.fetchStandardSet(id))
       );
+      console.log("standardSets", standardSets);
 
       return standardSets
         .filter((result): result is { data: StandardSet; error: null } => {

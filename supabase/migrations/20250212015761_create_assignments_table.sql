@@ -6,6 +6,7 @@ create table public.assignments (
     standard text,
     rubric text,
     exemplar text,
+    due_date timestamp with time zone not null,
     created_at timestamp with time zone default now(),
     updated_at timestamp with time zone default now()
 );

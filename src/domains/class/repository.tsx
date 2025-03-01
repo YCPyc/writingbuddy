@@ -11,6 +11,7 @@ export interface ClassRepository {
     classCode: string
   ): Promise<Errorable<Class>>;
   joinClass(classCode: string, studentId: string): Promise<Errorable<Profile>>;
+  getClass(classCode: string): Promise<Errorable<Class>>;
 }
 
 export const classRepository = (
@@ -47,6 +48,16 @@ export const classRepository = (
 
       if (error) throw error;
       return { data: data, error: null };
+    },
+    getClass: async (classCode: string) => {
+      const { data, error } = await client
+        .from("classes")
+        .select("*")
+        .eq("class_code", classCode)
+        .single();
+
+      if (error) return { data: null, error: error.message };
+      return { data, error: null };
     },
   };
 };

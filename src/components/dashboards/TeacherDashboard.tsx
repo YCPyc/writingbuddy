@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CreateClassForm } from "../class/CreateClassForm";
-import { TeacherToolsPage } from "./TeacherToolsPage";
+import { TeacherToolsPage } from "./teacher/TeacherToolsPage";
 import { useAuth } from "../auth/AuthProvider";
 
 type TeacherDashboardProps = {

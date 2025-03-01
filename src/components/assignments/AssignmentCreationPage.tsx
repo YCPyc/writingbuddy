@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Calendar } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -47,18 +47,28 @@ import {
 import { supabase } from "@/lib/supabaseClient";
 import { assignmentService } from "@/src/domains/assignments/service";
 import { assignmentRepository } from "@/src/domains/assignments/repository";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { Calendar as CalendarComponent } from "../../components/ui/calendar";
 
 type AssignmentCreationPageProps = {
   onBack: () => void;
 };
 
-type FormData = {
-  title: string;
-  instructions: string;
-  standard: string;
-  rubric: string;
-  exemplar: string;
-};
+// Define form validation schema
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  instructions: z.string().min(1, "Instructions are required"),
+  standard: z.string().optional(),
+  rubric: z.string().optional(),
+  exemplar: z.string().optional(),
+  dueDate: z.date({
+    required_error: "Due date is required",
+  }),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export function AssignmentCreationPage({
   onBack,
@@ -68,10 +78,21 @@ export function AssignmentCreationPage({
   classCode: string;
   onSuccess: (tab: string, shouldRefetch?: boolean) => void;
 }) {
-  const form = useForm<FormData>();
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      instructions: "",
+      standard: "",
+      rubric: "",
+      exemplar: "",
+      dueDate: new Date(Date.now()),
+    },
+  });
   const [standards, setStandards] = useState<StandardOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [assignmentCode, setAssignmentCode] = useState<string | null>(null);
 
   useEffect(() => {
@@ -105,6 +126,7 @@ export function AssignmentCreationPage({
       standard: data.standard,
       rubric: data.rubric,
       exemplar: data.exemplar,
+      due_date: data.dueDate.toISOString(),
     });
 
     if (code) {
@@ -169,6 +191,52 @@ export function AssignmentCreationPage({
 
               <FormField
                 control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Due Date</FormLabel>
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={field.value}
+                          onSelect={(date: Date | undefined) => {
+                            field.onChange(date);
+                            setCalendarOpen(false);
+                          }}
+                          disabled={(date: Date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>
+                      Select when this assignment is due
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="standard"
                 render={({ field }) => (
                   <FormItem>
@@ -182,12 +250,14 @@ export function AssignmentCreationPage({
                           className="w-full justify-between"
                           disabled={loading}
                         >
-                          {field.value
-                            ? standards.find(
-                                (standard) => standard.value === field.value
-                              )?.label
-                            : "Select standard..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          <span className="truncate mr-2">
+                            {field.value
+                              ? standards.find(
+                                  (standard) => standard.value === field.value
+                                )?.label || "Select standard..."
+                              : "Select standard..."}
+                          </span>
+                          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-full p-0">
@@ -211,13 +281,15 @@ export function AssignmentCreationPage({
                                 >
                                   <Check
                                     className={cn(
-                                      "mr-2 h-4 w-4",
+                                      "mr-2 h-4 w-4 shrink-0",
                                       field.value === standard.value
                                         ? "opacity-100"
                                         : "opacity-0"
                                     )}
                                   />
-                                  {standard.label}
+                                  <span className="truncate">
+                                    {standard.label}
+                                  </span>
                                 </CommandItem>
                               ))}
                             </CommandGroup>
