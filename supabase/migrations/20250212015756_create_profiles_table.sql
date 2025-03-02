@@ -7,6 +7,7 @@ create table public.profiles (
   first_name text,
   last_name text,
   role user_role null,
+  assignment_code UUID null,
   class_code text null,
   updated_at timestamp with time zone default now()
 );

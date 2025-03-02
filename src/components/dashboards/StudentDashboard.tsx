@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { useAuth } from "../auth/AuthProvider";
-import { classService } from "@/src/domains/class/service";
-import { classRepository } from "@/src/domains/class/repository";
+import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
 import { supabase } from "@/lib/supabaseClient";
 import { StudentToolsPage } from "./StudentToolsPage";
 import { LogoutButton } from "../auth/LogoutButton";
-import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 
 import FeedbackCard from "./FeedbackCard";
@@ -19,22 +24,27 @@ import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
 import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
 import { GRAMMAR } from "@/src/prompts/grammarPrompt";
 
+// Define a type for the feedback structure
+type FeedbackDictionary = {
+  [category: string]: {
+    [subCategory: string]: string | string[];
+  };
+};
+
 export function StudentDashboard({ userId }: StudentDashboardProps) {
-  const {
-    id,
-    email,
-    role,
-    classCode,
-    setRole,
-    setClassCode,
-    signInWithGoogle,
-    signOut,
-  } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [assignmentCode, setAssignmentCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showTools, setShowTools] = useState(false);
   const [inputtedClassCode, setInputtedClassCode] = useState("");
-  const [feedbackDictionary, setFeedbackDictionary] = useState({});
+  const [feedbackDictionary, setFeedbackDictionary] =
+    useState<FeedbackDictionary>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasAssignment, setHasAssignment] = useState(false);
+  const joinClass = () => {
+    setIsLoading(true);
+    setError(null);
+    setHasAssignment(false);
+  };
 
   const feedbackButtons = [
     {
@@ -64,31 +74,39 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     },
   ];
 
-  // If student already has a class, show tools page
-  if (classCode || showTools) {
-    return <StudentToolsPage userId={userId} classCode={classCode || ""} />;
-  }
+  const handleJoinAssignment = async () => {
+    setError(null);
+    setIsLoading(true);
 
-  const joinClass = async () => {
     try {
-      setLoading(true);
-      const newClassService = classService(classRepository(supabase));
-      const { error } = await newClassService.joinClass(
-        inputtedClassCode,
-        userId
-      );
+      // First verify the assignment exists
+      const { data: assignment, error: assignmentError } = await supabase
+        .from("assignments")
+        .select("assignment_code")
+        .eq("assignment_code", assignmentCode)
+        .single();
 
-      if (error) {
-        setError("Invalid class code or failed to join class");
-        throw error;
+      if (assignmentError || !assignment) {
+        setError("Invalid assignment code. Please check and try again.");
+        return;
       }
-      setClassCode(inputtedClassCode);
-      setShowTools(true);
-    } catch (error) {
-      console.error("Error joining class:", error);
-      setError("Failed to join class");
+
+      // Update the student's profile with the assignment code
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ assignment_code: assignmentCode })
+        .eq("id", userId);
+
+      if (updateError) {
+        setError("Failed to join assignment. Please try again.");
+        return;
+      }
+
+      setHasAssignment(true);
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -115,8 +133,8 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
             required
           />
         </div>
-        <Button onClick={joinClass} disabled={loading || !inputtedClassCode}>
-          {loading ? "Joining..." : "Join Class"}
+        <Button onClick={joinClass} disabled={isLoading || !inputtedClassCode}>
+          {isLoading ? "Joining..." : "Join Class"}
         </Button>
         {error && <div className="error">{error}</div>}{" "}
       </div>
