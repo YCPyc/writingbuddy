@@ -7,7 +7,7 @@ import { Separator } from "../../ui/separator";
 
 import { classService } from "@/src/domains/class/service";
 import { classRepository } from "@/src/domains/class/repository";
-import FeedbackCard from "./FeedbackButton";
+import FeedbackButton from "./FeedbackButton";
 import FeedbackDisplay from "./FeedbackDisplay";
 import { LogoutButton } from "../../auth/LogoutButton";
 import MainMenuOption from "./MainMenuOption";
@@ -219,7 +219,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               title="What are you stuck on?"
             >
               {stuckSupportButtons.map((item, index) => (
-                <FeedbackCard
+                <FeedbackButton
                   key={index}
                   tool="stuck"
                   title={item.title}
@@ -236,7 +236,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               title="What feedback would you like?"
             >
               {targetedFeedbackButtons.map((item, index) => (
-                <FeedbackCard
+                <FeedbackButton
                   key={index}
                   tool="targeted"
                   title={item.title}

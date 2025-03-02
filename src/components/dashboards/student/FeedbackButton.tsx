@@ -3,7 +3,7 @@ import { fetchDocumentContent } from "../../../utils/extractText";
 import { Button } from "../../ui/button";
 import { createClient } from "@supabase/supabase-js";
 
-function FeedbackCard({ title, tool, prompt_template, handleFeedback }: any) {
+function FeedbackButton({ title, tool, prompt_template, handleFeedback }: any) {
   const [feedback, setFeedback] = useState();
   const handleClick = async () => {
     // Extract all document content
@@ -78,4 +78,4 @@ function FeedbackCard({ title, tool, prompt_template, handleFeedback }: any) {
   );
 }
 
-export default FeedbackCard;
+export default FeedbackButton;
