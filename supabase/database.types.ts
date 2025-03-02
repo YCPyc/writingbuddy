@@ -83,6 +83,7 @@ export type Database = {
       }
       chat_history: {
         Row: {
+          assignment_code: string
           created_at: string | null
           id: string
           messages: Json[]
@@ -91,6 +92,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          assignment_code: string
           created_at?: string | null
           id?: string
           messages?: Json[]
@@ -99,6 +101,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          assignment_code?: string
           created_at?: string | null
           id?: string
           messages?: Json[]
@@ -107,6 +110,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "chat_history_assignment_code_fkey"
+            columns: ["assignment_code"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["assignment_code"]
+          },
           {
             foreignKeyName: "chat_history_student_id_fkey"
             columns: ["student_id"]
@@ -192,21 +202,21 @@ export type Database = {
       }
       reports: {
         Row: {
-          class_code: string
+          assignment_code: string
           content: string
           created_at: string | null
           id: string
           teacher_id: string
         }
         Insert: {
-          class_code: string
+          assignment_code: string
           content: string
           created_at?: string | null
           id?: string
           teacher_id: string
         }
         Update: {
-          class_code?: string
+          assignment_code?: string
           content?: string
           created_at?: string | null
           id?: string
@@ -214,11 +224,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "reports_class_code_fkey"
-            columns: ["class_code"]
+            foreignKeyName: "reports_assignment_code_fkey"
+            columns: ["assignment_code"]
             isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["class_code"]
+            referencedRelation: "assignments"
+            referencedColumns: ["assignment_code"]
           },
           {
             foreignKeyName: "reports_teacher_id_fkey"

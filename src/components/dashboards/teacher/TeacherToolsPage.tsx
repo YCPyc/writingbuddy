@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { LogoutButton } from "../../auth/LogoutButton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
-import { Badge } from "../../ui/badge";
-import { Button } from "../../ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../../components/ui/tabs";
+import { Badge } from "../../../components/ui/badge";
+import { Button } from "../../../components/ui/button";
 import { AssignmentCreationPage } from "../../assignments/AssignmentCreationPage";
+import { ReportCreationPage } from "../../reports/ReportCreationPage";
 import { supabase } from "@/lib/supabaseClient";
 import { classService } from "@/src/domains/class/service";
 import { classRepository } from "@/src/domains/class/repository";
@@ -18,9 +24,11 @@ type TeacherToolsPageProps = {
 
 export function TeacherToolsPage({ userId, classCode }: TeacherToolsPageProps) {
   const [showAssignmentCreation, setShowAssignmentCreation] = useState(false);
+  const [showReportCreation, setShowReportCreation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [className, setClassName] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showCreateReport, setShowCreateReport] = useState(false);
 
   useEffect(() => {
     // Fetch class name
@@ -57,6 +65,33 @@ export function TeacherToolsPage({ userId, classCode }: TeacherToolsPageProps) {
     );
   }
 
+  if (showReportCreation) {
+    return (
+      <ReportCreationPage
+        onBack={() => setShowReportCreation(false)}
+        classCode={classCode}
+        onSuccess={(tab) => {
+          setShowReportCreation(false);
+          setActiveTab(tab);
+          handleRefresh();
+        }}
+      />
+    );
+  }
+
+  if (showCreateReport) {
+    return (
+      <ReportCreationPage
+        onBack={() => setShowCreateReport(false)}
+        classCode={classCode}
+        onSuccess={(tab) => {
+          setShowCreateReport(false);
+          setActiveTab(tab);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-6xl">
       <div className="flex justify-between items-center">
@@ -85,6 +120,7 @@ export function TeacherToolsPage({ userId, classCode }: TeacherToolsPageProps) {
         <TabsContent value="overview">
           <OverviewTab
             onCreateAssignment={() => setShowAssignmentCreation(true)}
+            onCreateReport={() => setShowReportCreation(true)}
           />
         </TabsContent>
 
@@ -96,7 +132,10 @@ export function TeacherToolsPage({ userId, classCode }: TeacherToolsPageProps) {
         </TabsContent>
 
         <TabsContent value="reports">
-          <ReportsTab />
+          <ReportsTab
+            classCode={classCode}
+            onCreateReport={() => setShowCreateReport(true)}
+          />
         </TabsContent>
       </Tabs>
     </div>

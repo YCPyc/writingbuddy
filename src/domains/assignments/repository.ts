@@ -49,5 +49,23 @@ export function assignmentRepository(
 
       return true;
     },
+
+    async getAssignmentChatHistory(assignmentCode: string): Promise<any[]> {
+      const { data, error } = await client
+        .from("chat_history")
+        .select("messages")
+        .eq("assignment_code", assignmentCode)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching chat history:", error);
+        return [];
+      }
+
+      // Extract messages from all chat history entries
+      const allMessages = data.flatMap(entry => entry.messages || []);
+
+      return allMessages;
+    },
   };
 } 

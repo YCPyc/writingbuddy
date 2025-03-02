@@ -9,9 +9,13 @@ import { Button } from "../../../../components/ui/button";
 
 type OverviewTabProps = {
   onCreateAssignment: () => void;
+  onCreateReport: () => void;
 };
 
-export function OverviewTab({ onCreateAssignment }: OverviewTabProps) {
+export function OverviewTab({
+  onCreateAssignment,
+  onCreateReport,
+}: OverviewTabProps) {
   return (
     <div className="grid gap-4">
       <Card>
@@ -27,7 +31,7 @@ export function OverviewTab({ onCreateAssignment }: OverviewTabProps) {
           >
             Create New Assignment
           </Button>
-          <Button className="w-full" variant="outline">
+          <Button className="w-full" variant="outline" onClick={onCreateReport}>
             Create New Report
           </Button>
         </CardContent>
