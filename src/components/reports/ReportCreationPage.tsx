@@ -170,13 +170,14 @@ export function ReportCreationPage({
 
       // Set up a new message listener
       const messageListener = (message: any) => {
+        console.log("message", message);
         if (message.type === "chat_chunk") {
-          const parsedContent = parseStreamChunk(message.chunk);
-          if (parsedContent) {
-            setStreamedText((prev) => prev + parsedContent);
-          }
+          setStreamedText((prev) => prev + message.chunk);
         } else if (message.type === "chat_error") {
           console.error("Chat error:", message.error);
+          setIsGenerating(false);
+        } else if (message.type === "chat_complete") {
+          setStreamedText(message.fullText);
           setIsGenerating(false);
         }
         return true;

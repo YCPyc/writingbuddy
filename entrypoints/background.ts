@@ -39,14 +39,14 @@ export default defineBackground(() => {
     });
     
         // Create a stream using the AI SDK with API key
-        const stream = streamText({
+        const {textStream} = streamText({
           model: openaiClient('gpt-4o-mini'),
           messages,
         })
-        console.log("stream", stream)
+ 
         
         // Process the stream and send chunks to the UI
-        processAndSendStream(stream)
+        processAndSendStream(textStream)
         
         return { success: true, chatId }
       } catch (error) {
@@ -62,32 +62,31 @@ export default defineBackground(() => {
     }
     
     // Process and send stream chunks to UI
-    async function processAndSendStream(stream: any) {
+    async function processAndSendStream(textStream: AsyncIterable<string>) {
       try {
-        // Get the readable stream from the AI SDK
-        const readable = stream.toDataStream({
-          getErrorMessage: errorHandler
-        })
+        let buffer = '';
         
-        const reader = readable.getReader()
-        
-        // Read and forward stream chunks
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
+        // Process the stream using for-await loop (cleaner than manual reader)
+        for await (const delta of textStream) {
+          // Add the new text to our buffer
+          buffer += delta;
           
-          // Convert the Uint8Array to a string
-          const text = new TextDecoder().decode(value);
-          console.log("Decoded text:", text);
-          
-          // Send the text directly to your extension's UI components
+          // Send the delta to the UI for immediate feedback
           sendMessage({
             type: 'chat_chunk',
-            chunk: text
+            chunk: delta,
+            // Include the current buffer position for tracking
+            position: buffer.length
           })
         }
         
-        console.log(`Stream completed for chat`)
+        // Signal that the stream is complete
+        sendMessage({
+          type: 'chat_complete',
+          fullText: buffer
+        })
+        
+        console.log(`Stream completed for chat `)
       } catch (error) {
         console.error('Stream processing error:', error)
         sendMessage({
