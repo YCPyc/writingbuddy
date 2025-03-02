@@ -1,4 +1,4 @@
-import { PromptTemplate } from "./basePrompt";
+import { PromptTemplate } from "../basePrompt";
 
 export const EVIDENCE_USE_FEEDBACK_PROMPT = new PromptTemplate(
   "use_of_evidence_evaluation",

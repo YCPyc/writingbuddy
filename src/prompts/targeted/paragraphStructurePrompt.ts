@@ -1,4 +1,4 @@
-import { PromptTemplate } from "./basePrompt";
+import { PromptTemplate } from "../basePrompt";
 
 export const PARAGRAPH_STRUCTURE_PROMPT = new PromptTemplate(
   "paragraph_structure_evaluation",

@@ -1,4 +1,4 @@
-import { PromptTemplate } from "./basePrompt";
+import { PromptTemplate } from "../basePrompt";
 
 export const TRANSITIONS_PROMPT = new PromptTemplate(
   "transition_evaluation",

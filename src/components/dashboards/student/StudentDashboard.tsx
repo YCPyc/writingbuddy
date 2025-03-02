@@ -68,20 +68,20 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
   const stuckSupportButtons = [
     {
-      title: "Brainstorming",
-      prompt: Prompts.THESIS_FEEDBACK_PROMPT,
+      title: "Can you help me plan?",
+      prompt: Prompts.PREWRITING_PROMPT,
     },
     {
-      title: "temp",
-      prompt: Prompts.PARAGRAPH_STRUCTURE_PROMPT,
+      title: "How can I get started writing?",
+      prompt: Prompts.GETTING_STARTED_PROMPT,
     },
     {
-      title: "temp",
-      prompt: Prompts.EVIDENCE_USE_FEEDBACK_PROMPT,
+      title: "What should I write next?",
+      prompt: Prompts.CONTINUE_WRITING_PROMPT,
     },
     {
-      title: "temp",
-      prompt: Prompts.SUPPORT_FEEDBACK_PROMPT,
+      title: "How should I finish?",
+      prompt: Prompts.FINISH_WRITING_PROMPT,
     },
   ];
 
