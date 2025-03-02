@@ -221,6 +221,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               {stuckSupportButtons.map((item, index) => (
                 <FeedbackCard
                   key={index}
+                  tool="stuck"
                   title={item.title}
                   prompt_template={item.prompt}
                   handleFeedback={handleFeedback}
@@ -237,6 +238,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               {targetedFeedbackButtons.map((item, index) => (
                 <FeedbackCard
                   key={index}
+                  tool="targeted"
                   title={item.title}
                   prompt_template={item.prompt}
                   handleFeedback={handleFeedback}

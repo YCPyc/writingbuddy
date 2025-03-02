@@ -3,7 +3,7 @@ import { fetchDocumentContent } from "../../../utils/extractText";
 import { Button } from "../../ui/button";
 import { createClient } from "@supabase/supabase-js";
 
-function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
+function FeedbackCard({ title, tool, prompt_template, handleFeedback }: any) {
   const [feedback, setFeedback] = useState();
   const handleClick = async () => {
     // Extract all document content
@@ -15,35 +15,39 @@ function FeedbackCard({ title, prompt_template, handleFeedback }: any) {
     let responseFeedback = "";
 
     try {
-      // const response = await fetch(
-      //   "https://api.openai.com/v1/chat/completions",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${appConfig.openaiApiKey}`,
-      //     },
-      //     body: JSON.stringify({
-      //       model: "gpt-4",
-      //       messages: [{ role: "user", content: prompt }],
-      //       store: true,
-      //     }),
-      //   }
-      // );
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${appConfig.openaiApiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [{ role: "user", content: prompt }],
+            store: true,
+          }),
+        }
+      );
 
-      // const data = await response.json();
-      // responseFeedback = data.choices[0]?.message?.content || "No response";
-      // const feedbackDictionary: Record<string, string> =
-      //   JSON.parse(responseFeedback);
+      const data = await response.json();
+      responseFeedback = data.choices[0]?.message?.content || "No response";
+
+      let feedback: Record<string, string> | string;
+      if (tool == "targeted") {
+        feedback = JSON.parse(responseFeedback);
+      } else {
+        // Stuck
+        feedback = responseFeedback;
+      }
+
       const feedbackDictionary = {
-        praise: "Good job",
-        improvements: ["Do better", "Don't do worse"],
+        name: title,
+        feedback: feedback,
       };
 
-      handleFeedback({
-        name: title,
-        feedback: feedbackDictionary,
-      });
+      handleFeedback(feedbackDictionary);
 
       const supabase = createClient(
         appConfig.supabaseUrl,

@@ -14,7 +14,8 @@ export const FINISH_WRITING_PROMPT = new PromptTemplate(
   {exemplar}
 
   ## Feedback characteristics
-  - Write concise feedback up to 300 words
+  - Concise, easy-to-read, 6th-grade reading level
+  - Write concise feedback up to 300 characters
   - Explain the rationale for why you are making a suggestion
   - Unless you are telling conclusion strategies, Do NOT tell the student a solution; offer a reflective question as your suggestion
 
