@@ -9,10 +9,13 @@ import {
 
 type StudentToolsPageProps = {
   userId: string;
-  classCode: string;
+  assignmentCode: string;
 };
 
-export function StudentToolsPage({ userId, classCode }: StudentToolsPageProps) {
+export function StudentToolsPage({
+  userId,
+  assignmentCode,
+}: StudentToolsPageProps) {
   const [feedback, setFeedback] = useState<string>("");
   const [selectedText, setSelectedText] = useState<string>("");
 
@@ -30,7 +33,7 @@ export function StudentToolsPage({ userId, classCode }: StudentToolsPageProps) {
         <h2>Student Tools</h2>
         <LogoutButton />
       </div>
-      <p>Class Code: {classCode}</p>
+      <p>Assignment Code: {assignmentCode}</p>
 
       <ProvidedFeedbackOnSelection
         addFeedback={handleAddFeedback}

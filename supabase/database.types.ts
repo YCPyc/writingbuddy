@@ -34,8 +34,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      assignments: {
+        Row: {
+          assignment_code: string
+          class_code: string
+          created_at: string | null
+          due_date: string
+          exemplar: string | null
+          instruction: string
+          rubric: string | null
+          standard: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignment_code?: string
+          class_code: string
+          created_at?: string | null
+          due_date: string
+          exemplar?: string | null
+          instruction: string
+          rubric?: string | null
+          standard?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignment_code?: string
+          class_code?: string
+          created_at?: string | null
+          due_date?: string
+          exemplar?: string | null
+          instruction?: string
+          rubric?: string | null
+          standard?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_class_code_fkey"
+            columns: ["class_code"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["class_code"]
+          },
+        ]
+      }
       chat_history: {
         Row: {
+          assignment_code: string
           created_at: string | null
           id: string
           messages: Json[]
@@ -44,6 +92,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          assignment_code: string
           created_at?: string | null
           id?: string
           messages?: Json[]
@@ -52,6 +101,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          assignment_code?: string
           created_at?: string | null
           id?: string
           messages?: Json[]
@@ -60,6 +110,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "chat_history_assignment_code_fkey"
+            columns: ["assignment_code"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["assignment_code"]
+          },
           {
             foreignKeyName: "chat_history_student_id_fkey"
             columns: ["student_id"]
@@ -97,6 +154,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          assignment_code: string | null
           class_code: string | null
           email: string
           first_name: string | null
@@ -106,6 +164,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          assignment_code?: string | null
           class_code?: string | null
           email: string
           first_name?: string | null
@@ -115,6 +174,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          assignment_code?: string | null
           class_code?: string | null
           email?: string
           first_name?: string | null
@@ -124,6 +184,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_assignment_code_fkey"
+            columns: ["assignment_code"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["assignment_code"]
+          },
           {
             foreignKeyName: "profiles_class_id_fkey"
             columns: ["class_code"]
@@ -135,21 +202,21 @@ export type Database = {
       }
       reports: {
         Row: {
-          class_code: string
+          assignment_code: string
           content: string
           created_at: string | null
           id: string
           teacher_id: string
         }
         Insert: {
-          class_code: string
+          assignment_code: string
           content: string
           created_at?: string | null
           id?: string
           teacher_id: string
         }
         Update: {
-          class_code?: string
+          assignment_code?: string
           content?: string
           created_at?: string | null
           id?: string
@@ -157,11 +224,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "reports_class_code_fkey"
-            columns: ["class_code"]
+            foreignKeyName: "reports_assignment_code_fkey"
+            columns: ["assignment_code"]
             isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["class_code"]
+            referencedRelation: "assignments"
+            referencedColumns: ["assignment_code"]
           },
           {
             foreignKeyName: "reports_teacher_id_fkey"

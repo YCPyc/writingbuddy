@@ -19,10 +19,9 @@ function AppContent() {
   } = useAuth();
   if (!id) {
     return (
-      // <div className="container">
-      //   <Button onClick={signInWithGoogle}>Sign in with Google</Button>
-      // </div>
-      <StudentDashboard userId={"1"} />
+      <div className="container">
+        <Button onClick={signInWithGoogle}>Sign in with Google</Button>
+      </div>
     );
   }
 
