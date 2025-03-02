@@ -1,21 +1,20 @@
 import { useState } from "react";
 
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
-import { Separator } from "../../ui/separator";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Separator } from "../ui/separator";
 
 import { classService } from "@/src/domains/class/service";
 import { classRepository } from "@/src/domains/class/repository";
-import FeedbackButton from "./FeedbackButton";
-import FeedbackDisplay from "./FeedbackDisplay";
-import { LogoutButton } from "../../auth/LogoutButton";
-import MainMenuOption from "./MainMenuOption";
-import PageFrame from "./PageFrame";
+import FeedbackButton from "./student/FeedbackButton";
+import FeedbackDisplay from "./student/FeedbackDisplay";
+import { LogoutButton } from "../auth/LogoutButton";
+import MainMenuOption from "./student/MainMenuOption";
+import PageFrame from "./student/PageFrame";
 import { Prompts } from "@/src/prompts";
 import { supabase } from "@/lib/supabaseClient";
-import { StudentToolsPage } from "./StudentToolsPage";
-import { useAuth } from "../../auth/AuthProvider";
+import { useAuth } from "../auth/AuthProvider";
 
 type StudentDashboardProps = {
   userId: string;

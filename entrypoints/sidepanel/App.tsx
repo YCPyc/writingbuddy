@@ -1,11 +1,10 @@
 import { useAuth, AuthProvider } from "@/src/components/auth/AuthProvider";
 import { RoleSelector } from "@/src/components/role/RoleSelector";
 import { TeacherDashboard } from "@/src/components/dashboards/TeacherDashboard";
-import { StudentDashboard } from "@/src/components/dashboards/student/StudentDashboard";
+import { StudentDashboard } from "@/src/components/dashboards/StudentDashboard";
 import { useState } from "react";
 import type { UserRole } from "@/src/types";
 import { Button } from "@/src/components/ui/button";
-
 function AppContent() {
   const {
     id,
