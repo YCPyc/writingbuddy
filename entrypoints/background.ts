@@ -31,7 +31,6 @@ export default defineBackground(() => {
       try {
         // Create a unique ID for this chat session
         const chatId = Date.now().toString()
-        console.log("handleChatRequest", messages)
     
       // Create OpenAI client with API key
     const openaiClient = createOpenAI({
@@ -75,8 +74,6 @@ export default defineBackground(() => {
           sendMessage({
             type: 'chat_chunk',
             chunk: delta,
-            // Include the current buffer position for tracking
-            position: buffer.length
           })
         }
         
