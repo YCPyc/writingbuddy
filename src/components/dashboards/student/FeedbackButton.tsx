@@ -3,7 +3,19 @@ import { fetchDocumentContent } from "../../../utils/extractText";
 import { Button } from "../../ui/button";
 import { createClient } from "@supabase/supabase-js";
 
-function FeedbackButton({ title, tool, prompt_template, handleFeedback }: any) {
+import { supabase } from "@/lib/supabaseClient";
+import {
+  chatHistoryRepository,
+  ChatHistoryRepository,
+} from "@/src/domains/chat_history/repository";
+import { chatHistoryService } from "@/src/domains/chat_history/service";
+function FeedbackButton({
+  title,
+  tool,
+  userId,
+  prompt_template,
+  handleFeedback,
+}: any) {
   const [feedback, setFeedback] = useState();
   const handleClick = async () => {
     // Extract all document content
@@ -31,8 +43,8 @@ function FeedbackButton({ title, tool, prompt_template, handleFeedback }: any) {
         }
       );
 
-      const data = await response.json();
-      responseFeedback = data.choices[0]?.message?.content || "No response";
+      const dataJson = await response.json();
+      responseFeedback = dataJson.choices[0]?.message?.content || "No response";
 
       let feedback: Record<string, string> | string;
       if (tool == "targeted") {
@@ -49,22 +61,14 @@ function FeedbackButton({ title, tool, prompt_template, handleFeedback }: any) {
 
       handleFeedback(feedbackDictionary);
 
-      const supabase = createClient(
-        appConfig.supabaseUrl,
-        appConfig.supabaseKey
+      const newFeedbackService = chatHistoryService(
+        chatHistoryRepository(supabase)
       );
-      const createChatHistory = async () => {
-        const { data, error } = await supabase.from("chat_history").insert([
-          {
-            tool_name: title,
-            messages: [feedbackDictionary],
-            student_id: "4fabc89c-ded5-4f14-b9d2-7e25bfe361ac",
-          },
-        ]);
-      };
-
-      // Call the function
-      createChatHistory();
+      const { data, error } = await newFeedbackService.createChatHistory(
+        userId,
+        title,
+        feedback
+      );
     } catch (error) {
       console.error("Error:", error);
       responseFeedback = "Error fetching classification";

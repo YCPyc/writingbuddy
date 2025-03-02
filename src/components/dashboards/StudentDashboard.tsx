@@ -221,6 +221,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
                 <FeedbackButton
                   key={index}
                   tool="stuck"
+                  userId={userId}
                   title={item.title}
                   prompt_template={item.prompt}
                   handleFeedback={handleFeedback}
@@ -238,6 +239,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
                 <FeedbackButton
                   key={index}
                   tool="targeted"
+                  userId={userId}
                   title={item.title}
                   prompt_template={item.prompt}
                   handleFeedback={handleFeedback}
