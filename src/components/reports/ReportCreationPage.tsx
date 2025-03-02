@@ -141,7 +141,7 @@ export function ReportCreationPage({
       // Check if it's a text chunk (starts with 0:)
       if (chunk.startsWith("0:")) {
         // Extract the text content (remove the 0: prefix)
-        const textContent = chunk.substring(2);
+        const textContent = chunk.substring(3);
         return textContent;
       }
       if (chunk.startsWith("e:")) {
