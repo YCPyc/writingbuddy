@@ -28,7 +28,11 @@ function FeedbackDisplay({ feedback }: any) {
                           </ul>
                         ) : (
                           <ul className="list-disc pl-5">
-                            <li>{value}</li>
+                            <li>
+                              {typeof value === "string"
+                                ? value
+                                : JSON.stringify(value)}
+                            </li>
                           </ul>
                         )}
                       </div>
