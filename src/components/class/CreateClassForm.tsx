@@ -6,6 +6,11 @@ import { supabase } from "@/lib/supabaseClient";
 import { generateClassCode } from "./utils";
 import { userRepository } from "@/src/domains/user/repository";
 import { userService } from "@/src/domains/user/service";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 type CreateClassFormProps = {
   userId: string;
@@ -19,74 +24,98 @@ export function CreateClassForm({
   const [className, setClassName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const {
-    id,
-    email,
-    role,
-    classCode,
-    setRole,
-    setClassCode,
-    signInWithGoogle,
-    signOut,
-  } = useAuth();
+  const { classCode, setClassCode } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const newClassCode = generateClassCode();
-    const newClassService = classService(classRepository(supabase));
-    const { data, error } = await newClassService.createClass(
-      className,
-      userId,
-      newClassCode
-    );
-    const newUserService = userService(userRepository(supabase));
-    const { data: userData, error: userError } =
-      await newUserService.updateClassCode(userId, newClassCode);
-    if (error || userError) {
-      setError(error || userError || "An error occurred");
-      throw new Error(error || userError || "An error occurred");
-    } else {
+    setError(null);
+
+    try {
+      const newClassCode = generateClassCode();
+      const newClassService = classService(classRepository(supabase));
+      const { data, error } = await newClassService.createClass(
+        className,
+        userId,
+        newClassCode
+      );
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      const newUserService = userService(userRepository(supabase));
+      const { data: userData, error: userError } =
+        await newUserService.updateClassCode(userId, newClassCode);
+
+      if (userError) {
+        throw new Error(userError);
+      }
+
       setClassCode(data?.class_code || "");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div className="create-class-form">
-      <h2>Create a New Class</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="className">Class Name:</label>
-          <input
-            type="text"
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="className">Class Name</Label>
+          <Input
             id="className"
+            type="text"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
-            placeholder="Enter class name"
+            placeholder="Enter a name for your class"
+            className="border-lime-100 focus:border-lime-300 focus:ring-lime-200"
             required
           />
         </div>
-        <button type="submit" disabled={loading || !className}>
+
+        <Button
+          type="submit"
+          disabled={loading || !className}
+          className="w-full bg-lime-600 hover:bg-lime-700 text-white"
+        >
           {loading ? "Creating..." : "Create Class"}
-        </button>
+        </Button>
       </form>
 
-      {error && <div className="error">{error}</div>}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {classCode && (
-        <div className="success-message">
-          <h3>Class Created Successfully!</h3>
-          <p>
-            Class Code: <strong>{classCode}</strong>
-          </p>
-          <p>Share this code with your students to join the class.</p>
-          <button
-            className="next-button"
+        <div className="space-y-4">
+          <Alert className="bg-lime-50 border-lime-200">
+            <CheckCircle2 className="h-4 w-4 text-lime-600" />
+            <AlertTitle className="text-lime-800">
+              Class Created Successfully!
+            </AlertTitle>
+            <AlertDescription>
+              <p className="mt-2">
+                Class Code: <span className="font-medium">{classCode}</span>
+              </p>
+              <p className="text-sm text-lime-700 mt-1">
+                Share this code with your students to join the class.
+              </p>
+            </AlertDescription>
+          </Alert>
+
+          <Button
             onClick={() => setShowToolsPage(true)}
+            className="w-full bg-lime-600 hover:bg-lime-700 text-white"
           >
             Go to Teacher Tools →
-          </button>
+          </Button>
         </div>
       )}
     </div>

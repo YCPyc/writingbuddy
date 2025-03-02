@@ -20,8 +20,8 @@ export default defineConfig({
         "email",
         "profile",
         // These are necessary to allow for scraping the Google Doc
-        "https://www.googleapis.com/auth/documents",
-        "https://www.googleapis.com/auth/drive.file",
+        // "https://www.googleapis.com/auth/documents",
+        // "https://www.googleapis.com/auth/drive.file",
       ],
     },
   }),
