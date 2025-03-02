@@ -24,7 +24,6 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const { id, email, role, classCode, setClassCode } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showTools, setShowTools] = useState(false);
   const [inputtedClassCode, setInputtedClassCode] = useState("");
   const [targetedFeedbackDictionary, setTargetedFeedbackDictionary] = useState(
     {}
@@ -84,15 +83,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     },
   ];
 
-  // If student already has a class, show tools page
-  if (classCode || showTools) {
-    return <StudentToolsPage userId={userId} classCode={classCode || ""} />;
-  }
-
   const joinClass = async () => {
-    // TODO: Temporary pending database updates
-    setEnteredValidClassCode(true);
-    return;
     try {
       setLoading(true);
       const newClassService = classService(classRepository(supabase));
@@ -106,7 +97,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         throw error;
       }
       setClassCode(inputtedClassCode);
-      setShowTools(true);
+      setEnteredValidClassCode(true);
     } catch (error) {
       console.error("Error joining class:", error);
       setError("Failed to join class");
