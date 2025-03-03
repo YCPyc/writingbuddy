@@ -25,7 +25,7 @@ export const chatHistoryRepository = (
         .insert({
           student_id: student_id,
           tool_name: tool_name,
-          messages: [messages],
+          messages: [JSON.stringify(messages)],
         })
         .select("*")
         .single();
