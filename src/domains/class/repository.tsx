@@ -10,7 +10,10 @@ export interface ClassRepository {
     teacherId: string,
     classCode: string
   ): Promise<Errorable<Class>>;
-  joinClass(classCode: string, studentId: string): Promise<Errorable<Profile>>;
+  joinAssignment(
+    classCode: string,
+    studentId: string
+  ): Promise<Errorable<Profile>>;
   getClass(classCode: string): Promise<Errorable<Class>>;
 }
 
@@ -37,10 +40,10 @@ export const classRepository = (
       if (error) throw error;
       return { data: data, error: null };
     },
-    joinClass: async (classCode: string, studentId: string) => {
+    joinAssignment: async (classCode: string, studentId: string) => {
       const { data, error } = await client
         .from("profiles")
-        .update({ class_code: classCode })
+        .update({ assignment_code: classCode })
         .eq("id", studentId)
         .eq("role", "student")
         .select("*")

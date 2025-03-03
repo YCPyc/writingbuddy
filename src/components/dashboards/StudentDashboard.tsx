@@ -83,11 +83,11 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     },
   ];
 
-  const joinClass = async () => {
+  const joinAssignment = async () => {
     try {
       setLoading(true);
       const newClassService = classService(classRepository(supabase));
-      const { error } = await newClassService.joinClass(
+      const { error } = await newClassService.joinAssignment(
         inputtedClassCode,
         userId
       );
@@ -149,9 +149,9 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
       {!enteredValidClassCode && (
         <div className="join-class-form flex flex-col max-w-md gap-4 p-4">
-          <h2 className="font-bold text-xl">Join a Class</h2>
+          <h2 className="font-bold text-xl">Join Assignment</h2>
           <div className="form-group mt-4">
-            <Label htmlFor="classCode">Class Code:</Label>
+            <Label htmlFor="classCode">Assignment Code:</Label>
             <Input
               type="text"
               id="classCode"
@@ -159,11 +159,14 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               onChange={(e) =>
                 setInputtedClassCode(e.target.value.toUpperCase())
               }
-              placeholder="Enter class code"
+              placeholder="Enter assignment code"
               required
             />
           </div>
-          <Button onClick={joinClass} disabled={loading || !inputtedClassCode}>
+          <Button
+            onClick={joinAssignment}
+            disabled={loading || !inputtedClassCode}
+          >
             {loading ? "Joining..." : "Join Class"}
           </Button>
           {error && <div className="error">{error}</div>}{" "}
