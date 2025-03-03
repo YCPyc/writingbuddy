@@ -173,7 +173,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
       {enteredValidClassCode && (
         <>
           {showHelpOptions && (
-            <div className="flex flex-wrap gap-4 p-4">
+            <div className="flex flex-col max-w-80 gap-4 p-4">
               <MainMenuOption
                 buttonText="I'm Stuck"
                 description="I'm not sure what I should do next and need help going on."
@@ -254,7 +254,6 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
                 onBackClick={() => handleBack("feedback")}
                 title="Feedback"
               >
-                {/* Note: Need to adjust this to use stuck feedback later */}
                 <FeedbackDisplay feedback={targetedFeedbackDictionary} />
               </PageFrame>
             </>

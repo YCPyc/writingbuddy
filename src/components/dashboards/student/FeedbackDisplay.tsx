@@ -3,7 +3,10 @@ function FeedbackDisplay({ feedback }: any) {
     <>
       <div>
         <div className="text-gray-500 italic text-sm mt-1">
-          <p>Disclaimer: This is an AI-generated response.</p>
+          <p>
+            Disclaimer: This is an AI-generated response. It may contain
+            mistakes. Please check the feedback carefully.
+          </p>
         </div>
       </div>
       <div>
@@ -11,23 +14,25 @@ function FeedbackDisplay({ feedback }: any) {
           <>
             {Object.keys(feedback).map((key) => (
               <div key={key} className="mb-5">
-                <h2 className="font-bold mb-1 text-sm">{key}</h2>
+                <h2 className="font-bold mb-1 text-lg">{key}</h2>
 
                 {typeof feedback[key] === "string" ? (
-                  <p>{feedback[key]}</p>
+                  <p className="text-base">{feedback[key]}</p>
                 ) : (
                   <>
                     {Object.entries(feedback[key]).map(([subKey, value]) => (
                       <div key={subKey} className="mb-5">
-                        <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
+                        <h3 className="font-bold mb-0.5 text-base">
+                          {subKey.charAt(0).toUpperCase() + subKey.slice(1)}
+                        </h3>
                         {Array.isArray(value) ? (
-                          <ul className="list-disc pl-5">
+                          <ul className="list-disc pl-5 text-base">
                             {value.map((item, index) => (
                               <li key={index}>{item}</li>
                             ))}
                           </ul>
                         ) : (
-                          <ul className="list-disc pl-5">
+                          <ul className="list-disc pl-5 text-base">
                             <li>
                               {typeof value === "string"
                                 ? value

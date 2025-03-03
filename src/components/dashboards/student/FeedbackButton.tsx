@@ -50,7 +50,7 @@ function FeedbackButton({
       if (tool == "targeted") {
         feedback = JSON.parse(responseFeedback);
       } else {
-        // Stuck
+        // Stuck feedback
         feedback = responseFeedback;
       }
 
