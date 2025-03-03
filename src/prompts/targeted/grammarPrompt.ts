@@ -1,4 +1,4 @@
-import { PromptTemplate } from "./basePrompt";
+import { PromptTemplate } from "../basePrompt";
 
 export const GRAMMAR = new PromptTemplate(
   "grammar_evaluation",

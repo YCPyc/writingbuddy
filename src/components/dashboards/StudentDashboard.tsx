@@ -1,187 +1,268 @@
 import { useState } from "react";
-import { Button } from "../../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
-import { supabase } from "@/lib/supabaseClient";
-import { StudentToolsPage } from "./StudentToolsPage";
-import { LogoutButton } from "../auth/LogoutButton";
+
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 
-import FeedbackCard from "./FeedbackCard";
+import { classService } from "@/src/domains/class/service";
+import { classRepository } from "@/src/domains/class/repository";
+import FeedbackButton from "./student/FeedbackButton";
+import FeedbackDisplay from "./student/FeedbackDisplay";
+import { LogoutButton } from "../auth/LogoutButton";
+import MainMenuOption from "./student/MainMenuOption";
+import PageFrame from "./student/PageFrame";
+import { Prompts } from "@/src/prompts";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "../auth/AuthProvider";
 
 type StudentDashboardProps = {
   userId: string;
 };
-import { THESIS_FEEDBACK_PROMPT } from "@/src/prompts/thesisPrompt";
-import { EVIDENCE_USE_FEEDBACK_PROMPT } from "@/src/prompts/evidencePrompt";
-import { SUPPORT_FEEDBACK_PROMPT } from "@/src/prompts/supportFeedbackPrompt";
-import { PARAGRAPH_STRUCTURE_PROMPT } from "@/src/prompts/paragraphStructurePrompt";
-import { GRAMMAR } from "@/src/prompts/grammarPrompt";
-
-// Define a type for the feedback structure
-type FeedbackDictionary = {
-  [category: string]: {
-    [subCategory: string]: string | string[];
-  };
-};
 
 export function StudentDashboard({ userId }: StudentDashboardProps) {
-  const [assignmentCode, setAssignmentCode] = useState("");
+  const { id, email, role, classCode, setClassCode } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showTools, setShowTools] = useState(false);
   const [inputtedClassCode, setInputtedClassCode] = useState("");
-  const [feedbackDictionary, setFeedbackDictionary] =
-    useState<FeedbackDictionary>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasAssignment, setHasAssignment] = useState(false);
-  const joinClass = () => {
-    setIsLoading(true);
-    setError(null);
-    setHasAssignment(false);
-  };
+  const [targetedFeedbackDictionary, setTargetedFeedbackDictionary] = useState(
+    {}
+  );
+  const [showFeedbackOptions, setShowFeedbackOptions] = useState(false);
+  const [showHelpOptions, setShowHelpOptions] = useState(true);
+  const [showStuckOptions, setShowStuckOptions] = useState(false);
+  const [showGeneralFeedbackOptions, setShowGeneralFeedbackOptions] =
+    useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
+  const [feedbackSource, setFeedbackSource] = useState<string | null>(null);
+  const [enteredValidClassCode, setEnteredValidClassCode] = useState(false);
 
-  const feedbackButtons = [
+  const targetedFeedbackButtons = [
     {
       title: "Thesis",
-      copy: "Check your essay's topic and focus",
-      prompt: THESIS_FEEDBACK_PROMPT,
-    },
-    {
-      title: "Use of Evidence",
-      copy: "Check how well you incorporated sources",
-      prompt: EVIDENCE_USE_FEEDBACK_PROMPT,
-    },
-    {
-      title: "Support",
-      copy: "Check that your ideas have adequate support details",
-      prompt: SUPPORT_FEEDBACK_PROMPT,
+      prompt: Prompts.THESIS_FEEDBACK_PROMPT,
     },
     {
       title: "Paragraph Structure",
-      copy: "Check that your paragraphs have all the required parts",
-      prompt: PARAGRAPH_STRUCTURE_PROMPT,
+      prompt: Prompts.PARAGRAPH_STRUCTURE_PROMPT,
+    },
+    {
+      title: "Evidence",
+      prompt: Prompts.EVIDENCE_USE_FEEDBACK_PROMPT,
+    },
+    {
+      title: "Support",
+      prompt: Prompts.SUPPORT_FEEDBACK_PROMPT,
+    },
+    {
+      title: "Flow & Transitions",
+      prompt: Prompts.TRANSITIONS_PROMPT,
     },
     {
       title: "Grammar",
-      copy: "Check for grammar mistakes",
-      prompt: GRAMMAR,
+      prompt: Prompts.GRAMMAR,
     },
   ];
 
-  const handleJoinAssignment = async () => {
-    setError(null);
-    setIsLoading(true);
+  const stuckSupportButtons = [
+    {
+      title: "Can you help me plan?",
+      prompt: Prompts.PREWRITING_PROMPT,
+    },
+    {
+      title: "How can I get started writing?",
+      prompt: Prompts.GETTING_STARTED_PROMPT,
+    },
+    {
+      title: "What should I write next?",
+      prompt: Prompts.CONTINUE_WRITING_PROMPT,
+    },
+    {
+      title: "How should I finish?",
+      prompt: Prompts.FINISH_WRITING_PROMPT,
+    },
+  ];
 
+  const joinAssignment = async () => {
     try {
-      // First verify the assignment exists
-      const { data: assignment, error: assignmentError } = await supabase
-        .from("assignments")
-        .select("assignment_code")
-        .eq("assignment_code", assignmentCode)
-        .single();
+      setLoading(true);
+      const newClassService = classService(classRepository(supabase));
+      const { error } = await newClassService.joinAssignment(
+        inputtedClassCode,
+        userId
+      );
 
-      if (assignmentError || !assignment) {
-        setError("Invalid assignment code. Please check and try again.");
-        return;
+      if (error) {
+        setError("Invalid class code or failed to join class");
+        throw error;
       }
-
-      // Update the student's profile with the assignment code
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ assignment_code: assignmentCode })
-        .eq("id", userId);
-
-      if (updateError) {
-        setError("Failed to join assignment. Please try again.");
-        return;
-      }
-
-      setHasAssignment(true);
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      setClassCode(inputtedClassCode);
+      setEnteredValidClassCode(true);
+    } catch (error) {
+      console.error("Error joining class:", error);
+      setError("Failed to join class");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const handleFeedback = ({ name, feedback }: any) => {
     const newFeedback = { [name]: feedback };
-    setFeedbackDictionary((prev) => ({ ...prev, ...newFeedback }));
+    setTargetedFeedbackDictionary((prev) => ({ ...prev, ...newFeedback }));
+    setSelectedFeedback(name);
+    setShowFeedbackOptions(false);
+  };
+
+  const handleBack = (source: string) => {
+    if (source === "stuck") {
+      setShowStuckOptions(false);
+      setShowHelpOptions(true);
+    } else if (source === "targeted") {
+      setShowFeedbackOptions(false);
+      setShowHelpOptions(true);
+    } else if (source === "general") {
+      setShowGeneralFeedbackOptions(false);
+      setShowHelpOptions(true);
+    } else {
+      // For feedback page
+      if (feedbackSource === "stuck") {
+        setShowStuckOptions(true);
+      } else if (feedbackSource === "targeted") {
+        setShowFeedbackOptions(true);
+      }
+      setSelectedFeedback(null);
+    }
   };
 
   return (
-    <div className="student-panel">
-      <div className="header">
-        <h2>Join a Class</h2>
+    <div className="student-panel p-4 bg-gradient-to-b from-lime-50 to-white">
+      <div className="header flex justify-end">
         <LogoutButton />
       </div>
-      <div className="join-class-form">
-        <div className="form-group">
-          <label htmlFor="classCode">Class Code:</label>
-          <input
-            type="text"
-            id="classCode"
-            value={inputtedClassCode}
-            onChange={(e) => setInputtedClassCode(e.target.value.toUpperCase())}
-            placeholder="Enter class code"
-            required
-          />
+
+      {enteredValidClassCode && showHelpOptions && (
+        <div className="mt-6 gap-4 p-4">
+          <h2 className="font-bold text-xl">What would you like help with?</h2>
+          <Separator />
         </div>
-        <Button onClick={joinClass} disabled={isLoading || !inputtedClassCode}>
-          {isLoading ? "Joining..." : "Join Class"}
-        </Button>
-        {error && <div className="error">{error}</div>}{" "}
-      </div>
-      <div>
-        <b>Targeted Feedback</b>
-        <Separator />
-      </div>
-      <div className="grid grid-cols-2 gap-4 p-4">
-        {feedbackButtons.map((item, index) => (
-          <FeedbackCard
-            title={item.title}
-            copy={item.copy}
-            prompt_template={item.prompt}
-            handleFeedback={handleFeedback}
-          />
-        ))}
-      </div>
-      <div>
-        {Object.keys(feedbackDictionary).length > 0 && (
-          <>
-            {Object.keys(feedbackDictionary).map((key) => (
-              <div key={key} className="mb-5">
-                <h2 className="font-bold mb-1 text-sm">{key}</h2>{" "}
-                {/* Render the main key as a heading */}
-                {Object.entries(feedbackDictionary[key]).map(
-                  ([subKey, value]) => (
-                    <div key={subKey} className="mb-5">
-                      <h3 className="font-bold mb-0.5 text-xs">{subKey}</h3>
-                      {Array.isArray(value) ? (
-                        <ul className="list-disc pl-5">
-                          {value.map((item, index) => (
-                            <li key={index}>{item}</li> // List each item in "improvements"
-                          ))}
-                        </ul>
-                      ) : (
-                        <ul className="list-disc pl-5">
-                          <li>{value}</li>
-                        </ul>
-                      )}
-                    </div>
-                  )
-                )}
-              </div>
-            ))}
-          </>
-        )}
-      </div>
+      )}
+
+      {!enteredValidClassCode && (
+        <div className="join-class-form flex flex-col max-w-md gap-4 p-4">
+          <h2 className="font-bold text-xl">Join Assignment</h2>
+          <div className="form-group mt-4">
+            <Label htmlFor="classCode">Assignment Code:</Label>
+            <Input
+              type="text"
+              id="classCode"
+              value={inputtedClassCode}
+              onChange={(e) =>
+                setInputtedClassCode(e.target.value.toUpperCase())
+              }
+              placeholder="Enter assignment code"
+              required
+            />
+          </div>
+          <Button
+            onClick={joinAssignment}
+            disabled={loading || !inputtedClassCode}
+          >
+            {loading ? "Joining..." : "Join Class"}
+          </Button>
+          {error && <div className="error">{error}</div>}{" "}
+        </div>
+      )}
+
+      {enteredValidClassCode && (
+        <>
+          {showHelpOptions && (
+            <div className="flex flex-col max-w-80 gap-4 p-4">
+              <MainMenuOption
+                buttonText="I'm Stuck"
+                description="I'm not sure what I should do next and need help going on."
+                onClick={() => {
+                  setShowHelpOptions(false);
+                  setShowStuckOptions(true);
+                  setFeedbackSource("stuck");
+                }}
+              />
+              <MainMenuOption
+                buttonText="I Need Targeted Feedback"
+                description="I want feedback on a specific part of my writing."
+                onClick={() => {
+                  setShowHelpOptions(false);
+                  setShowFeedbackOptions(true);
+                  setFeedbackSource("targeted");
+                }}
+              />
+              <MainMenuOption
+                buttonText="I Need General Feedback"
+                description="Tell me in general how I can improve this writing so far."
+                onClick={() => {
+                  setShowHelpOptions(false);
+                  setShowGeneralFeedbackOptions(true);
+                }}
+              />
+            </div>
+          )}
+
+          {showStuckOptions && !selectedFeedback && (
+            <PageFrame
+              onBackClick={() => handleBack("stuck")}
+              title="What are you stuck on?"
+            >
+              {stuckSupportButtons.map((item, index) => (
+                <FeedbackButton
+                  key={index}
+                  tool="stuck"
+                  userId={userId}
+                  title={item.title}
+                  prompt_template={item.prompt}
+                  handleFeedback={handleFeedback}
+                />
+              ))}
+            </PageFrame>
+          )}
+
+          {showFeedbackOptions && !selectedFeedback && (
+            <PageFrame
+              onBackClick={() => handleBack("targeted")}
+              title="What feedback would you like?"
+            >
+              {targetedFeedbackButtons.map((item, index) => (
+                <FeedbackButton
+                  key={index}
+                  tool="targeted"
+                  userId={userId}
+                  title={item.title}
+                  prompt_template={item.prompt}
+                  handleFeedback={handleFeedback}
+                />
+              ))}
+            </PageFrame>
+          )}
+
+          {showGeneralFeedbackOptions && (
+            <PageFrame
+              onBackClick={() => handleBack("general")}
+              title="What do you want to work on?"
+            >
+              <p>Chat-inteface-goes-here</p>
+            </PageFrame>
+          )}
+
+          {selectedFeedback && (
+            <>
+              <PageFrame
+                onBackClick={() => handleBack("feedback")}
+                title="Feedback"
+              >
+                <FeedbackDisplay feedback={targetedFeedbackDictionary} />
+              </PageFrame>
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-export type UserRole = "teacher" | "student" | null;
+export type UserRole = "teacher" | "student" ;
 
 export type ExtendedManifest = chrome.runtime.ManifestV3 & {
   oauth2?: {

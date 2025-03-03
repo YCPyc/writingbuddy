@@ -1,40 +1,24 @@
+import { supabase } from "@/lib/supabaseClient";
 const authenticateAndExtractText = async (): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    chrome.identity.getAuthToken({ interactive: true }, (token) => {
-      if (chrome.runtime.lastError) {
-        reject("Error getting auth token: " + chrome.runtime.lastError.message);
-        return;
-      }
+  return new Promise(async (resolve, reject) => {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
+    if (error || !session) {
+      reject(
+        "Error getting session: " + (error?.message || "No session received.")
+      );
+      return;
+    }
+    const token = localStorage.getItem("google_access_token");
 
-      if (!token) {
-        reject("No token received.");
-        return;
-      }
-      extractTextFromGoogleDoc(token).then(resolve).catch(reject);
-    });
-  });
-};
+    if (!token) {
+      reject("No token received.");
+      return;
+    }
 
-const refreshTokenIfExpired = () => {
-  return new Promise((resolve, reject) => {
-    chrome.identity.getAuthToken({ interactive: false }, function (token) {
-      if (chrome.runtime.lastError || !token) {
-        chrome.identity.getAuthToken(
-          { interactive: true },
-          function (newToken) {
-            if (chrome.runtime.lastError || !newToken) {
-              reject(
-                "Error refreshing auth token: " + chrome.runtime.lastError
-              );
-            } else {
-              resolve(newToken);
-            }
-          }
-        );
-      } else {
-        resolve(token);
-      }
-    });
+    extractTextFromGoogleDoc(token).then(resolve).catch(reject);
   });
 };
 
@@ -57,39 +41,33 @@ const getDocumentIdFromUrl = () => {
 const extractTextFromGoogleDoc = async (token: string): Promise<string> => {
   const documentId = await getDocumentIdFromUrl(); // Extract the document ID
 
-  return refreshTokenIfExpired()
-    .then((token) => {
-      return fetch(`https://docs.googleapis.com/v1/documents/${documentId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // Extract text from document body
-          const bodyContent = data.body.content;
-          let allText = "";
+  return fetch(`https://docs.googleapis.com/v1/documents/${documentId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // Extract text from document body
+      const bodyContent = data.body.content;
+      let allText = "";
 
-          bodyContent.forEach((element: any) => {
-            if (element.paragraph) {
-              element.paragraph.elements.forEach((textElement: any) => {
-                if (textElement.textRun && textElement.textRun.content) {
-                  allText += textElement.textRun.content;
-                }
-              });
+      bodyContent.forEach((element: any) => {
+        if (element.paragraph) {
+          element.paragraph.elements.forEach((textElement: any) => {
+            if (textElement.textRun && textElement.textRun.content) {
+              allText += textElement.textRun.content;
             }
           });
+        }
+      });
 
-          return allText; // Return the extracted text
-        })
-        .catch((error) => {
-          throw new Error("Error extracting text: " + error);
-        });
+      return allText; // Return the extracted text
     })
     .catch((error) => {
-      throw new Error("Failed to authenticate or refresh token: " + error);
+      throw new Error("Error extracting text: " + error);
     });
 };
 

@@ -1,4 +1,4 @@
-import { PromptTemplate } from "./basePrompt";
+import { PromptTemplate } from "../basePrompt";
 
 export const SUPPORT_FEEDBACK_PROMPT = new PromptTemplate(
   "supporting_details_evaluation",

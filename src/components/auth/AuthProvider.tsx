@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Set parameters exactly as in Supabase docs
       url.searchParams.set("client_id", manifest.oauth2.client_id);
-      url.searchParams.set("response_type", "id_token");
+      url.searchParams.set("response_type", "code");
       url.searchParams.set("access_type", "offline");
       url.searchParams.set(
         "redirect_uri",
@@ -119,8 +119,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // Extract the ID token as shown in Supabase docs
           const url = new URL(redirectedTo);
-          const params = new URLSearchParams(url.hash.substring(1));
-          const idToken = params.get("id_token");
+          const params = new URLSearchParams(url.search);
+          const authCode = params.get("code");
+          if (!authCode) {
+            console.error("No authorization code in response");
+            return;
+          }
+
+          const tokenResponse = await fetch(
+            "https://oauth2.googleapis.com/token",
+            {
+              method: "POST",
+              body: new URLSearchParams({
+                code: authCode,
+                client_id: manifest.oauth2.client_id,
+                client_secret: manifest.oauth2.client_secret,
+                redirect_uri: `https://${chrome.runtime.id}.chromiumapp.org`,
+                grant_type: "authorization_code",
+              }),
+            }
+          );
+
+          const tokenData = await tokenResponse.json();
+          const idToken = tokenData.id_token; // For user identity
+          const accessToken = tokenData.access_token; // For document scraping
 
           if (!idToken) {
             console.error("No ID token in response");
@@ -131,6 +153,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             provider: "google",
             token: idToken,
           });
+
+          localStorage.setItem("google_access_token", accessToken);
 
           if (error) {
             console.error("Supabase auth failed:", error);
