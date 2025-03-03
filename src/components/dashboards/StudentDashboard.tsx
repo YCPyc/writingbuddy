@@ -135,7 +135,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   };
 
   return (
-    <div className="student-panel p-4">
+    <div className="student-panel p-4 bg-gradient-to-b from-lime-50 to-white">
       <div className="header flex justify-end">
         <LogoutButton />
       </div>
@@ -148,9 +148,9 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
       )}
 
       {!enteredValidClassCode && (
-        <div className="join-class-form flex flex-wrap gap-4 p-4">
+        <div className="join-class-form flex flex-col max-w-md gap-4 p-4">
           <h2 className="font-bold text-xl">Join a Class</h2>
-          <div className="form-group">
+          <div className="form-group mt-4">
             <Label htmlFor="classCode">Class Code:</Label>
             <Input
               type="text"
