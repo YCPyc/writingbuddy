@@ -192,23 +192,26 @@ export function ReportCreationPage({
         messages: [
           {
             role: "user",
-            content: `Generate a concise report for the following assignment:
-            
-Title: ${assignmentData.title}
+            content: `Generate a concise report based on student's chat history with an AI assistant on an writing assignment:
+            ${
+              assignmentData.chat_history.length > 0
+                ? `Here are the students' chat history with an AI assistant. Identify the student's strengths and areas for improvement from the chat history. But do not mention the chat history in the report: ${assignmentData.chat_history}
+                Assignment Details:
+                Title: ${assignmentData.title}
 
 Instructions: ${assignmentData.instructions}
 
 Rubric: ${assignmentData.rubric}
 
 Standards: ${assignmentData.standards}
+Format the report with markdown headings and bullet points for: Overview, Strengths, Areas for Improvement, and Recommendations.`
+                : "Students have not yet interacted with the AI assistant for this assignment, so only mention that there is no AI interaction. and ignore other instructions."
+            }            
 
-${
-  assignmentData.chat_history
-    ? `Here are the students' chat history with an AI assistant. Identify the student's strengths and areas for improvement from the chat history. But do not mention the chat history in the report: ${assignmentData.chat_history}`
-    : ""
-}
 
-Format the report with markdown headings and bullet points for: Overview, Strengths, Areas for Improvement, and Recommendations.`,
+
+
+`,
           },
         ],
       });

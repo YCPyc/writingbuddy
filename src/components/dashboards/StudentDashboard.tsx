@@ -1,74 +1,55 @@
 import { useState } from "react";
-
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Separator } from "../ui/separator";
-
-import { classService } from "@/src/domains/class/service";
-import { classRepository } from "@/src/domains/class/repository";
-import FeedbackButton from "./student/FeedbackButton";
-import FeedbackDisplay from "./student/FeedbackDisplay";
-import { LogoutButton } from "../auth/LogoutButton";
-import MainMenuOption from "./student/MainMenuOption";
-import PageFrame from "./student/PageFrame";
-import { Prompts } from "@/src/prompts";
-import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "../auth/AuthProvider";
+import { LogoutButton } from "../auth/LogoutButton";
+import { JoinAssignmentForm } from "./student/JoinAssignmentForm";
+import { StudentHeader } from "./student/StudentHeader";
+import { HelpOptionsMenu } from "./student/HelpOptionsMenu";
+import { StuckOptionsPanel } from "./student/StuckOptionsPanel";
+import { TargetedFeedbackPanel } from "./student/TargetedFeedbackPanel";
+import { GeneralFeedbackPanel } from "./student/GeneralFeedbackPanel";
+import { FeedbackResultPanel } from "./student/FeedbackResultPanel";
+import { AssignmentDetailsPanel } from "./student/AssignmentDetailsPanel";
+import { AssignmentSelectionPanel } from "./student/AssignmentSelectionPanel";
+import { Prompts } from "@/src/prompts";
 
 type StudentDashboardProps = {
   userId: string;
 };
 
 export function StudentDashboard({ userId }: StudentDashboardProps) {
-  const { id, email, role, classCode, setClassCode } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [inputtedClassCode, setInputtedClassCode] = useState("");
+  const { classCode, setClassCode } = useAuth();
   const [targetedFeedbackDictionary, setTargetedFeedbackDictionary] = useState(
     {}
   );
   const [showFeedbackOptions, setShowFeedbackOptions] = useState(false);
-  const [showHelpOptions, setShowHelpOptions] = useState(true);
+  const [showHelpOptions, setShowHelpOptions] = useState(false);
+  const [showAssignmentDetails, setShowAssignmentDetails] = useState(false);
+  const [showAssignmentSelection, setShowAssignmentSelection] = useState(false);
   const [showStuckOptions, setShowStuckOptions] = useState(false);
   const [showGeneralFeedbackOptions, setShowGeneralFeedbackOptions] =
     useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
   const [feedbackSource, setFeedbackSource] = useState<string | null>(null);
   const [enteredValidClassCode, setEnteredValidClassCode] = useState(false);
+  const [selectedAssignmentCode, setSelectedAssignmentCode] = useState<
+    string | null
+  >(null);
+  const [showJoinForm, setShowJoinForm] = useState(true);
 
   const targetedFeedbackButtons = [
-    {
-      title: "Thesis",
-      prompt: Prompts.THESIS_FEEDBACK_PROMPT,
-    },
+    { title: "Thesis", prompt: Prompts.THESIS_FEEDBACK_PROMPT },
     {
       title: "Paragraph Structure",
       prompt: Prompts.PARAGRAPH_STRUCTURE_PROMPT,
     },
-    {
-      title: "Evidence",
-      prompt: Prompts.EVIDENCE_USE_FEEDBACK_PROMPT,
-    },
-    {
-      title: "Support",
-      prompt: Prompts.SUPPORT_FEEDBACK_PROMPT,
-    },
-    {
-      title: "Flow & Transitions",
-      prompt: Prompts.TRANSITIONS_PROMPT,
-    },
-    {
-      title: "Grammar",
-      prompt: Prompts.GRAMMAR,
-    },
+    { title: "Evidence", prompt: Prompts.EVIDENCE_USE_FEEDBACK_PROMPT },
+    { title: "Support", prompt: Prompts.SUPPORT_FEEDBACK_PROMPT },
+    { title: "Flow & Transitions", prompt: Prompts.TRANSITIONS_PROMPT },
+    { title: "Grammar", prompt: Prompts.GRAMMAR },
   ];
 
   const stuckSupportButtons = [
-    {
-      title: "Can you help me plan?",
-      prompt: Prompts.PREWRITING_PROMPT,
-    },
+    { title: "Can you help me plan?", prompt: Prompts.PREWRITING_PROMPT },
     {
       title: "How can I get started writing?",
       prompt: Prompts.GETTING_STARTED_PROMPT,
@@ -77,34 +58,8 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
       title: "What should I write next?",
       prompt: Prompts.CONTINUE_WRITING_PROMPT,
     },
-    {
-      title: "How should I finish?",
-      prompt: Prompts.FINISH_WRITING_PROMPT,
-    },
+    { title: "How should I finish?", prompt: Prompts.FINISH_WRITING_PROMPT },
   ];
-
-  const joinAssignment = async () => {
-    try {
-      setLoading(true);
-      const newClassService = classService(classRepository(supabase));
-      const { error } = await newClassService.joinAssignment(
-        inputtedClassCode,
-        userId
-      );
-
-      if (error) {
-        setError("Invalid class code or failed to join class");
-        throw error;
-      }
-      setClassCode(inputtedClassCode);
-      setEnteredValidClassCode(true);
-    } catch (error) {
-      console.error("Error joining class:", error);
-      setError("Failed to join class");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFeedback = ({ name, feedback }: any) => {
     const newFeedback = { [name]: feedback };
@@ -123,146 +78,132 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     } else if (source === "general") {
       setShowGeneralFeedbackOptions(false);
       setShowHelpOptions(true);
+    } else if (source === "details") {
+      setShowAssignmentDetails(false);
+      setShowAssignmentSelection(true);
+    } else if (source === "help") {
+      setShowHelpOptions(false);
+      setShowAssignmentDetails(true);
     } else {
       // For feedback page
       if (feedbackSource === "stuck") {
+        setSelectedFeedback(null);
         setShowStuckOptions(true);
       } else if (feedbackSource === "targeted") {
+        setSelectedFeedback(null);
         setShowFeedbackOptions(true);
       }
-      setSelectedFeedback(null);
     }
   };
 
+  const handleJoinSuccess = () => {
+    setEnteredValidClassCode(true);
+    setShowAssignmentSelection(true);
+    setShowJoinForm(false);
+  };
+
+  const handleSelectAssignment = (assignmentCode: string) => {
+    console.log("handleSelectAssignment", assignmentCode);
+    setSelectedAssignmentCode(assignmentCode);
+    setShowAssignmentSelection(false);
+    setShowAssignmentDetails(true);
+  };
+
+  const handleViewAssignmentDetails = () => {
+    setShowAssignmentDetails(false);
+    setShowHelpOptions(true);
+  };
+
+  const handleBackToJoinForm = () => {
+    setShowAssignmentSelection(false);
+    setShowJoinForm(true);
+  };
+
+  const handleViewExistingAssignments = () => {
+    setShowJoinForm(false);
+    setShowAssignmentSelection(true);
+  };
+
   return (
-    <div className="student-panel p-4 bg-gradient-to-b from-lime-50 to-white">
-      <div className="header flex justify-end">
+    <div className="student-panel p-4 bg-gradient-to-b from-lime-50 to-white min-h-screen">
+      <StudentHeader>
         <LogoutButton />
-      </div>
+      </StudentHeader>
 
-      {enteredValidClassCode && showHelpOptions && (
-        <div className="mt-6 gap-4 p-4">
-          <h2 className="font-bold text-xl">What would you like help with?</h2>
-          <Separator />
-        </div>
-      )}
+      <>
+        {showJoinForm && (
+          <JoinAssignmentForm
+            userId={userId}
+            setClassCode={setClassCode}
+            onSuccess={handleJoinSuccess}
+            onViewExistingAssignments={handleViewExistingAssignments}
+          />
+        )}
+        {showAssignmentSelection && (
+          <AssignmentSelectionPanel
+            userId={userId}
+            onSelectAssignment={handleSelectAssignment}
+            onBackClick={handleBackToJoinForm}
+          />
+        )}
 
-      {!enteredValidClassCode && (
-        <div className="join-class-form flex flex-col max-w-md gap-4 p-4">
-          <h2 className="font-bold text-xl">Join Assignment</h2>
-          <div className="form-group mt-4">
-            <Label htmlFor="classCode">Assignment Code:</Label>
-            <Input
-              type="text"
-              id="classCode"
-              value={inputtedClassCode}
-              onChange={(e) =>
-                setInputtedClassCode(e.target.value.toUpperCase())
-              }
-              placeholder="Enter assignment code"
-              required
-            />
-          </div>
-          <Button
-            onClick={joinAssignment}
-            disabled={loading || !inputtedClassCode}
-          >
-            {loading ? "Joining..." : "Join Class"}
-          </Button>
-          {error && <div className="error">{error}</div>}{" "}
-        </div>
-      )}
+        {showAssignmentDetails && selectedAssignmentCode && (
+          <AssignmentDetailsPanel
+            assignmentCode={selectedAssignmentCode}
+            onContinue={handleViewAssignmentDetails}
+            onBackClick={() => handleBack("details")}
+          />
+        )}
 
-      {enteredValidClassCode && (
-        <>
-          {showHelpOptions && (
-            <div className="flex flex-col max-w-80 gap-4 p-4">
-              <MainMenuOption
-                buttonText="I'm Stuck"
-                description="I'm not sure what I should do next and need help going on."
-                onClick={() => {
-                  setShowHelpOptions(false);
-                  setShowStuckOptions(true);
-                  setFeedbackSource("stuck");
-                }}
-              />
-              <MainMenuOption
-                buttonText="I Need Targeted Feedback"
-                description="I want feedback on a specific part of my writing."
-                onClick={() => {
-                  setShowHelpOptions(false);
-                  setShowFeedbackOptions(true);
-                  setFeedbackSource("targeted");
-                }}
-              />
-              <MainMenuOption
-                buttonText="I Need General Feedback"
-                description="Tell me in general how I can improve this writing so far."
-                onClick={() => {
-                  setShowHelpOptions(false);
-                  setShowGeneralFeedbackOptions(true);
-                }}
-              />
-            </div>
-          )}
+        {showHelpOptions && (
+          <HelpOptionsMenu
+            onStuckClick={() => {
+              setShowHelpOptions(false);
+              setShowStuckOptions(true);
+              setFeedbackSource("stuck");
+            }}
+            onTargetedFeedbackClick={() => {
+              setShowHelpOptions(false);
+              setShowFeedbackOptions(true);
+              setFeedbackSource("targeted");
+            }}
+            onGeneralFeedbackClick={() => {
+              setShowHelpOptions(false);
+              setShowGeneralFeedbackOptions(true);
+            }}
+            onBackClick={() => handleBack("help")}
+          />
+        )}
 
-          {showStuckOptions && !selectedFeedback && (
-            <PageFrame
-              onBackClick={() => handleBack("stuck")}
-              title="What are you stuck on?"
-            >
-              {stuckSupportButtons.map((item, index) => (
-                <FeedbackButton
-                  key={index}
-                  tool="stuck"
-                  userId={userId}
-                  title={item.title}
-                  prompt_template={item.prompt}
-                  handleFeedback={handleFeedback}
-                />
-              ))}
-            </PageFrame>
-          )}
+        {showStuckOptions && !selectedFeedback && (
+          <StuckOptionsPanel
+            buttons={stuckSupportButtons}
+            userId={userId}
+            onBackClick={() => handleBack("stuck")}
+            handleFeedback={handleFeedback}
+          />
+        )}
 
-          {showFeedbackOptions && !selectedFeedback && (
-            <PageFrame
-              onBackClick={() => handleBack("targeted")}
-              title="What feedback would you like?"
-            >
-              {targetedFeedbackButtons.map((item, index) => (
-                <FeedbackButton
-                  key={index}
-                  tool="targeted"
-                  userId={userId}
-                  title={item.title}
-                  prompt_template={item.prompt}
-                  handleFeedback={handleFeedback}
-                />
-              ))}
-            </PageFrame>
-          )}
+        {showFeedbackOptions && !selectedFeedback && (
+          <TargetedFeedbackPanel
+            buttons={targetedFeedbackButtons}
+            userId={userId}
+            onBackClick={() => handleBack("targeted")}
+            handleFeedback={handleFeedback}
+          />
+        )}
 
-          {showGeneralFeedbackOptions && (
-            <PageFrame
-              onBackClick={() => handleBack("general")}
-              title="What do you want to work on?"
-            >
-              <p>Chat-inteface-goes-here</p>
-            </PageFrame>
-          )}
+        {showGeneralFeedbackOptions && (
+          <GeneralFeedbackPanel onBackClick={() => handleBack("general")} />
+        )}
 
-          {selectedFeedback && (
-            <>
-              <PageFrame
-                onBackClick={() => handleBack("feedback")}
-                title="Feedback"
-              >
-                <FeedbackDisplay feedback={targetedFeedbackDictionary} />
-              </PageFrame>
-            </>
-          )}
-        </>
-      )}
+        {selectedFeedback && (
+          <FeedbackResultPanel
+            feedback={targetedFeedbackDictionary}
+            onBackClick={() => handleBack("feedback")}
+          />
+        )}
+      </>
     </div>
   );
 }
