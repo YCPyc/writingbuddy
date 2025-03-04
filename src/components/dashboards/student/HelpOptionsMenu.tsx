@@ -7,6 +7,7 @@ type HelpOptionsMenuProps = {
   onStuckClick: () => void;
   onTargetedFeedbackClick: () => void;
   onGeneralFeedbackClick: () => void;
+  onGradeWritingClick: () => void;
   onBackClick: () => void;
 };
 
@@ -14,6 +15,7 @@ export function HelpOptionsMenu({
   onStuckClick,
   onTargetedFeedbackClick,
   onGeneralFeedbackClick,
+  onGradeWritingClick,
   onBackClick,
 }: HelpOptionsMenuProps) {
   return (
@@ -43,6 +45,12 @@ export function HelpOptionsMenu({
           buttonText="I Need Targeted Feedback"
           description="I want feedback on a specific part of my writing."
           onClick={onTargetedFeedbackClick}
+        />
+
+        <MainMenuOption
+          buttonText="Grade My Writing"
+          description="I want AI to provide a grade with the assignment rubric."
+          onClick={onGradeWritingClick}
         />
       </div>
     </div>
