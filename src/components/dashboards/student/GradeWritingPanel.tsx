@@ -153,6 +153,7 @@ export function GradeWritingPanel({
   return (
     <PageFrame onBackClick={onBackClick} title="What do you want to work on?">
       <Button
+        className="w-full bg-lime-600 hover:bg-lime-700 text-white"
         onClick={
           feedback.current_draft.length === 0
             ? handleGradeWriting
@@ -166,9 +167,18 @@ export function GradeWritingPanel({
 
       <div className="pt-7">
         {feedback.current_draft.length === 0 ? (
-          <p>Click "Grade Writing" to get a score for your writing.</p>
+          <p className="text-base">
+            Get an AI-generated score and feedback based on the assignment
+            rubric from your teacher.
+          </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="text-gray-500 italic text-sm mt-1">
+              <p>
+                Disclaimer: This is an AI-generated response. It may contain
+                mistakes. Please check the feedback carefully.
+              </p>
+            </div>
             <h3 className="font-bold mb-1 text-lg">
               Predicted Score: {feedback.current_draft[1]}
             </h3>
