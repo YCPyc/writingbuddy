@@ -207,7 +207,11 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         )}
 
         {showGradeWriting && (
-          <GradeWritingPanel onBackClick={() => handleBack("grade")} />
+          <GradeWritingPanel
+            assignmentCode={selectedAssignmentCode}
+            userId={userId}
+            onBackClick={() => handleBack("grade")}
+          />
         )}
 
         {selectedFeedback && (
