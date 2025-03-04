@@ -76,7 +76,11 @@ function FeedbackButton({
   };
 
   return (
-    <Button key={title} className="text-base" onClick={handleClick}>
+    <Button
+      key={title}
+      className="text-base w-full bg-lime-600 hover:bg-lime-700 text-white"
+      onClick={handleClick}
+    >
       {title}
     </Button>
   );

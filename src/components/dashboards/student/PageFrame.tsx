@@ -1,26 +1,35 @@
-import React from "react";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import { ChevronLeft } from "lucide-react";
 
-import GoBackButton from "./GoBackButton";
-import { Separator } from "../../ui/separator";
 type PageFrameProps = {
-  onBackClick: () => void;
-  title: string;
   children: React.ReactNode;
+  title: string;
+  onBackClick: () => void;
 };
 
-const PageFrame: React.FC<PageFrameProps> = ({
-  onBackClick,
-  title,
+export default function PageFrame({
   children,
-}) => {
+  title,
+  onBackClick,
+}: PageFrameProps) {
   return (
-    <div className="page-frame flex flex-wrap gap-4 p-4">
-      <GoBackButton onClick={onBackClick} />
-      <h2 className="font-bold text-xl">{title}</h2>
-      <Separator />
-      <div className="content flex flex-wrap gap-4">{children}</div>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBackClick}
+          className="hover:bg-lime-100"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+        <h2 className="text-xl font-bold text-lime-800">{title}</h2>
+      </div>
+
+      <Card className="border-lime-100 shadow-sm">
+        <CardContent className="p-6">{children}</CardContent>
+      </Card>
     </div>
   );
-};
-
-export default PageFrame;
+}

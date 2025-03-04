@@ -1,4 +1,4 @@
-import { Assignment, AssignmentInsert, AssignmentRepository } from "./model";
+import { Assignment, AssignmentInsert, AssignmentRepository, StudentAssignment } from "./model";
 
 export function assignmentService(assignmentRepository: AssignmentRepository) {
   return {
@@ -17,6 +17,22 @@ export function assignmentService(assignmentRepository: AssignmentRepository) {
       } catch (error) {
         console.error("Error in getAssignmentChatHistory service:", error);
         return [];
+      }
+    },
+    async getAssignmentDetails(assignmentCode: string) {
+      try {
+        return await assignmentRepository.getAssignmentDetails(assignmentCode);
+      } catch (error) {
+        console.error("Error in getAssignmentDetails service:", error);
+        return null;
+      }
+    },
+    async getStudentAssignments(studentId: string): Promise<StudentAssignment[] | null> {
+      try {
+        return await assignmentRepository.getStudentAssignments(studentId);
+      } catch (error) {
+        console.error("Error in getStudentAssignments service:", error);
+        return null;
       }
     }
   };

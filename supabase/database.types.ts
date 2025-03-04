@@ -207,6 +207,7 @@ export type Database = {
           created_at: string | null
           id: string
           teacher_id: string
+          updated_at: string | null
         }
         Insert: {
           assignment_code: string
@@ -214,6 +215,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           teacher_id: string
+          updated_at?: string | null
         }
         Update: {
           assignment_code?: string
@@ -221,6 +223,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           teacher_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -233,6 +236,39 @@ export type Database = {
           {
             foreignKeyName: "reports_teacher_id_fkey"
             columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_assignment: {
+        Row: {
+          assignment_code: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          assignment_code: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          assignment_code?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_assignment_assignment_code_fkey"
+            columns: ["assignment_code"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["assignment_code"]
+          },
+          {
+            foreignKeyName: "student_assignment_student_id_fkey"
+            columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

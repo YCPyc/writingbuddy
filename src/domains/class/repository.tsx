@@ -41,16 +41,63 @@ export const classRepository = (
       return { data: data, error: null };
     },
     joinAssignment: async (classCode: string, studentId: string) => {
-      const { data, error } = await client
-        .from("profiles")
-        .update({ assignment_code: classCode })
-        .eq("id", studentId)
-        .eq("role", "student")
-        .select("*")
-        .single();
+      try {
+        // First, check if the assignment exists
+        const { data: assignmentData, error: assignmentCheckError } =
+          await client
+            .from("assignments")
+            .select("assignment_code")
+            .eq("assignment_code", classCode)
+            .single();
 
-      if (error) throw error;
-      return { data: data, error: null };
+        if (assignmentCheckError) {
+          return { data: null, error: "Invalid assignment code" };
+        }
+
+        // Update the student's profile with the assignment code
+        const { data: profileData, error: profileError } = await client
+          .from("profiles")
+          .update({ assignment_code: classCode })
+          .eq("id", studentId)
+          .eq("role", "student")
+          .select("*")
+          .single();
+
+        if (profileError) {
+          return { data: null, error: profileError.message };
+        }
+
+        // Add an entry to the student_assignment table
+        // Using upsert to handle the case where the student is already assigned to this assignment
+        const { error: assignmentError } = await client
+          .from("student_assignment")
+          .upsert(
+            {
+              student_id: studentId,
+              assignment_code: classCode,
+            },
+            {
+              onConflict: "student_id,assignment_code",
+              ignoreDuplicates: true,
+            }
+          );
+
+        if (assignmentError) {
+          console.error(
+            "Error adding student_assignment entry:",
+            assignmentError
+          );
+          // We'll continue even if this fails, as the profile update is the primary operation
+        }
+
+        return { data: profileData, error: null };
+      } catch (err) {
+        console.error("Error joining assignment:", err);
+        return {
+          data: null,
+          error: err instanceof Error ? err.message : "Unknown error",
+        };
+      }
     },
     getClass: async (classCode: string) => {
       const { data, error } = await client
