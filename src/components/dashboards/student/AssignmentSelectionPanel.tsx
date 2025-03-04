@@ -74,7 +74,7 @@ export function AssignmentSelectionPanel({
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-6 space-y-4 text-base">
         {error || !assignments || assignments.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">

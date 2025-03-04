@@ -107,9 +107,9 @@ export function AssignmentDetailsPanel({
 
         <Separator className="my-2 bg-lime-100" />
 
-        <div className="space-y-3">
+        <div className="space-y-3 text-base">
           <div>
-            <h4 className="font-medium text-lime-800">Instructions</h4>
+            <h4 className="font-medium text-lime-800 text-lg">Instructions</h4>
             <p className="whitespace-pre-line text-gray-700">
               {assignment.instruction}
             </p>
@@ -117,7 +117,7 @@ export function AssignmentDetailsPanel({
 
           {assignment.rubric && (
             <div>
-              <h4 className="font-medium text-lime-800 mt-4">Rubric</h4>
+              <h4 className="font-medium text-lime-800 mt-8 text-lg">Rubric</h4>
               <p className="whitespace-pre-line text-gray-700">
                 {assignment.rubric}
               </p>
@@ -128,7 +128,7 @@ export function AssignmentDetailsPanel({
         <div className="pt-4 flex justify-end">
           <Button
             onClick={onContinue}
-            className="bg-lime-600 hover:bg-lime-700 text-white flex items-center gap-2"
+            className="bg-lime-600 hover:bg-lime-700 text-white flex items-center gap-2 text-base"
           >
             Get Help <ChevronRight className="h-4 w-4" />
           </Button>
