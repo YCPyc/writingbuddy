@@ -1,8 +1,7 @@
+import React, { useEffect, useState } from "react";
 import PageFrame from "./PageFrame";
 import { fetchDocumentContent } from "../../../utils/extractText";
 import { Prompts } from "@/src/prompts";
-import { useState } from "react";
-
 import { Button } from "../../ui/button";
 import {
   chatHistoryRepository,
@@ -10,18 +9,27 @@ import {
 } from "@/src/domains/chat_history/repository";
 import { supabase } from "@/lib/supabaseClient";
 import { chatHistoryService } from "@/src/domains/chat_history/service";
-
 import { assignmentRepository } from "@/src/domains/assignments/repository";
 import { assignmentService } from "@/src/domains/assignments/service";
 import { Assignment } from "@/src/domains/assignments/model";
-type GradeWritingPanelProps = {
+import appConfig from "@/app.config";
+
+interface Feedback {
+  current_draft: string[];
+  previous_draft: string[];
+}
+
+interface GradeWritingPanelProps {
   userId: string;
   onBackClick: () => void;
   assignmentCode: string | null;
-};
+}
 
-import appConfig from "@/app.config";
-async function callOpenAI(userId: string, tool: string, prompt: any) {
+async function callOpenAI(
+  userId: string,
+  tool: string,
+  prompt: string
+): Promise<{ score: string; rationale: string }> {
   let responseFeedback = "";
 
   try {
@@ -71,13 +79,10 @@ export function GradeWritingPanel({
   userId,
   onBackClick,
 }: GradeWritingPanelProps) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [assignment, setAssignment] = useState<Assignment | null>(null);
-  const [feedback, setFeedback] = useState<{
-    current_draft: string[];
-    previous_draft: string[];
-  }>({
+  const [feedback, setFeedback] = useState<Feedback>({
     current_draft: [],
     previous_draft: [],
   });
