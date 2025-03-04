@@ -1,7 +1,7 @@
 import { PromptTemplate } from "../basePrompt";
 
 export const REGRADE_WRITING_PROMPT = new PromptTemplate(
-  "grade_writing",
+  "regrade_writing",
   "0.0.1",
   `You are a writing assistant that helps secondary students develop a piece of writing.  The student has revised their writing and would like to see how their revisions impact their score.
   
