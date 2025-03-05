@@ -13,6 +13,9 @@ import { AssignmentDetailsPanel } from "./student/AssignmentDetailsPanel";
 import { AssignmentSelectionPanel } from "./student/AssignmentSelectionPanel";
 import { Prompts } from "@/src/prompts";
 
+import { Loader2, ChevronRight, ChevronLeft } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Button } from "../ui/button";
 type StudentDashboardProps = {
   userId: string;
 };
@@ -37,6 +40,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     string | null
   >(null);
   const [showJoinForm, setShowJoinForm] = useState(true);
+  const [selectedTab, setSelectedTab] = useState("assignment");
 
   const targetedFeedbackButtons = [
     { title: "Thesis", prompt: Prompts.THESIS_FEEDBACK_PROMPT },
@@ -73,13 +77,15 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const handleBack = (source: string) => {
     if (source === "stuck") {
       setShowStuckOptions(false);
-      setShowHelpOptions(true);
+      setShowAssignmentDetails(true);
+      setSelectedTab("help");
     } else if (source === "targeted") {
       setShowFeedbackOptions(false);
-      setShowHelpOptions(true);
+      setShowAssignmentDetails(true);
+      setSelectedTab("help");
     } else if (source === "general") {
       setShowGeneralFeedbackOptions(false);
-      setShowHelpOptions(true);
+      setShowAssignmentDetails(true);
     } else if (source === "details") {
       setShowAssignmentDetails(false);
       setShowAssignmentSelection(true);
@@ -88,7 +94,8 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
       setShowAssignmentDetails(true);
     } else if (source === "grade") {
       setShowGradeWriting(false);
-      setShowHelpOptions(true);
+      setShowAssignmentDetails(true);
+      setSelectedTab("help");
     } else {
       // For feedback page
       if (feedbackSource === "stuck") {
@@ -153,35 +160,56 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
         )}
 
         {showAssignmentDetails && selectedAssignmentCode && (
-          <AssignmentDetailsPanel
-            assignmentCode={selectedAssignmentCode}
-            onContinue={handleViewAssignmentDetails}
-            onBackClick={() => handleBack("details")}
-          />
-        )}
-
-        {showHelpOptions && (
-          <HelpOptionsMenu
-            onStuckClick={() => {
-              setShowHelpOptions(false);
-              setShowStuckOptions(true);
-              setFeedbackSource("stuck");
-            }}
-            onTargetedFeedbackClick={() => {
-              setShowHelpOptions(false);
-              setShowFeedbackOptions(true);
-              setFeedbackSource("targeted");
-            }}
-            onGeneralFeedbackClick={() => {
-              setShowHelpOptions(false);
-              setShowGeneralFeedbackOptions(true);
-            }}
-            onGradeWritingClick={() => {
-              setShowHelpOptions(false);
-              setShowGradeWriting(true);
-            }}
-            onBackClick={() => handleBack("help")}
-          />
+          <>
+            <Tabs defaultValue={selectedTab}>
+              <div className="flex items-center justify-center mb-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleBack("details")}
+                  className="hover:bg-lime-100 mr-5"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <div className="flex-grow text-center mr-8">
+                  <TabsList>
+                    <TabsTrigger value="assignment">
+                      Assignment Info
+                    </TabsTrigger>
+                    <TabsTrigger value="help">Help Tools</TabsTrigger>
+                  </TabsList>
+                </div>
+              </div>
+              <TabsContent value="assignment">
+                <AssignmentDetailsPanel
+                  assignmentCode={selectedAssignmentCode}
+                  onContinue={handleViewAssignmentDetails}
+                  onBackClick={() => handleBack("details")}
+                />
+              </TabsContent>
+              <TabsContent value="help">
+                <HelpOptionsMenu
+                  onStuckClick={() => {
+                    setShowHelpOptions(false);
+                    setShowStuckOptions(true);
+                    setShowAssignmentDetails(false);
+                    setFeedbackSource("stuck");
+                  }}
+                  onTargetedFeedbackClick={() => {
+                    setShowHelpOptions(false);
+                    setShowFeedbackOptions(true);
+                    setShowAssignmentDetails(false);
+                    setFeedbackSource("targeted");
+                  }}
+                  onGradeWritingClick={() => {
+                    setShowHelpOptions(false);
+                    setShowGradeWriting(true);
+                    setShowAssignmentDetails(false);
+                  }}
+                />
+              </TabsContent>
+            </Tabs>
+          </>
         )}
 
         {showStuckOptions && !selectedFeedback && (
