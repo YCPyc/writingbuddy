@@ -8,6 +8,8 @@ import { CONTINUE_WRITING_PROMPT } from "./stuck/continueWritingPrompt";
 import { PREWRITING_PROMPT } from "./stuck/prewritingPrompt";
 import { GETTING_STARTED_PROMPT } from "./stuck/getStartedPrompt";
 import { FINISH_WRITING_PROMPT } from "./stuck/finishWritingPrompt";
+import { GRADE_WRITING_PROMPT } from "./grade/gradeWritingPrompt";
+import { REGRADE_WRITING_PROMPT } from "./grade/regradeWritingPrompt";
 
 export const Prompts = {
   // Stuck Support
@@ -22,4 +24,7 @@ export const Prompts = {
   PARAGRAPH_STRUCTURE_PROMPT,
   GRAMMAR,
   TRANSITIONS_PROMPT,
+  // Grade Writing
+  GRADE_WRITING_PROMPT,
+  REGRADE_WRITING_PROMPT,
 };

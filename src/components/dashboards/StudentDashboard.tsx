@@ -7,6 +7,7 @@ import { HelpOptionsMenu } from "./student/HelpOptionsMenu";
 import { StuckOptionsPanel } from "./student/StuckOptionsPanel";
 import { TargetedFeedbackPanel } from "./student/TargetedFeedbackPanel";
 import { GeneralFeedbackPanel } from "./student/GeneralFeedbackPanel";
+import { GradeWritingPanel } from "./student/GradeWritingPanel";
 import { FeedbackResultPanel } from "./student/FeedbackResultPanel";
 import { AssignmentDetailsPanel } from "./student/AssignmentDetailsPanel";
 import { AssignmentSelectionPanel } from "./student/AssignmentSelectionPanel";
@@ -28,6 +29,7 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
   const [showStuckOptions, setShowStuckOptions] = useState(false);
   const [showGeneralFeedbackOptions, setShowGeneralFeedbackOptions] =
     useState(false);
+  const [showGradeWriting, setShowGradeWriting] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
   const [feedbackSource, setFeedbackSource] = useState<string | null>(null);
   const [enteredValidClassCode, setEnteredValidClassCode] = useState(false);
@@ -84,6 +86,9 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
     } else if (source === "help") {
       setShowHelpOptions(false);
       setShowAssignmentDetails(true);
+    } else if (source === "grade") {
+      setShowGradeWriting(false);
+      setShowHelpOptions(true);
     } else {
       // For feedback page
       if (feedbackSource === "stuck") {
@@ -171,6 +176,10 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
               setShowHelpOptions(false);
               setShowGeneralFeedbackOptions(true);
             }}
+            onGradeWritingClick={() => {
+              setShowHelpOptions(false);
+              setShowGradeWriting(true);
+            }}
             onBackClick={() => handleBack("help")}
           />
         )}
@@ -195,6 +204,14 @@ export function StudentDashboard({ userId }: StudentDashboardProps) {
 
         {showGeneralFeedbackOptions && (
           <GeneralFeedbackPanel onBackClick={() => handleBack("general")} />
+        )}
+
+        {showGradeWriting && (
+          <GradeWritingPanel
+            assignmentCode={selectedAssignmentCode}
+            userId={userId}
+            onBackClick={() => handleBack("grade")}
+          />
         )}
 
         {selectedFeedback && (
