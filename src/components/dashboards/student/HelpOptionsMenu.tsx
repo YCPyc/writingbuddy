@@ -6,29 +6,17 @@ import { ChevronLeft } from "lucide-react";
 type HelpOptionsMenuProps = {
   onStuckClick: () => void;
   onTargetedFeedbackClick: () => void;
-  onGeneralFeedbackClick: () => void;
   onGradeWritingClick: () => void;
-  onBackClick: () => void;
 };
 
 export function HelpOptionsMenu({
   onStuckClick,
   onTargetedFeedbackClick,
-  onGeneralFeedbackClick,
   onGradeWritingClick,
-  onBackClick,
 }: HelpOptionsMenuProps) {
   return (
     <div className="mt-6 space-y-6">
       <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBackClick}
-          className="hover:bg-lime-100"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
         <h2 className="font-bold text-xl text-lime-800">
           What would you like help with?
         </h2>

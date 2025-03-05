@@ -81,14 +81,6 @@ export function AssignmentDetailsPanel({
     <Card className="border-lime-100 shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBackClick}
-            className="hover:bg-lime-100"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
           <CardTitle className="text-xl text-lime-800">
             Assignment Details
           </CardTitle>
@@ -123,15 +115,6 @@ export function AssignmentDetailsPanel({
               </p>
             </div>
           )}
-        </div>
-
-        <div className="pt-4 flex justify-end">
-          <Button
-            onClick={onContinue}
-            className="bg-lime-600 hover:bg-lime-700 text-white flex items-center gap-2 text-base"
-          >
-            Get Help <ChevronRight className="h-4 w-4" />
-          </Button>
         </div>
       </CardContent>
     </Card>
